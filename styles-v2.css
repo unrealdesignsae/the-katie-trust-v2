@@ -1,0 +1,892 @@
+/* Katie Trust v2 — Neuromorphic Design System */
+:root {
+  --primary: #006090;
+  --primary-dark: #004a70;
+  --primary-soft: #e8f0f5;
+  --accent: #b88a3e;
+  --accent-soft: #f5ecd9;
+  --bg: #eef0f4;
+  --bg-warm: #e8eaee;
+  --surface: #e4e7ed;
+  --bg-deep: #1e2a35;
+  --ink: #1a2730;
+  --ink-soft: #4a5560;
+  --ink-muted: #7a8590;
+  --line: #d8dce4;
+  --line-soft: #e4e8f0;
+  --serif: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Inter', -apple-system, system-ui, sans-serif;
+  --container: 1200px;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 20px;
+
+  /* Neuromorphic shadows */
+  --neu-shadow: 4px 6px 16px rgba(0,0,0,0.12), 0 1px 4px rgba(0,0,0,0.06);
+  --neu-shadow-sm: 2px 4px 10px rgba(0,0,0,0.09), 0 1px 3px rgba(0,0,0,0.05);
+  --neu-shadow-inset: inset 3px 3px 8px rgba(0,0,0,0.10), inset 1px 1px 3px rgba(0,0,0,0.06);
+  --neu-shadow-hover: 6px 10px 24px rgba(0,0,0,0.15), 0 2px 6px rgba(0,0,0,0.07);
+  --neu-shadow-pressed: inset 4px 4px 12px rgba(0,0,0,0.13), inset 1px 1px 4px rgba(0,0,0,0.07);
+}
+
+/* ══════════════════════════════════════════════════
+   DARK THEME — applied via data-theme="dark" on <html>
+   ══════════════════════════════════════════════════ */
+[data-theme="dark"] {
+  --bg:          #1e2530;
+  --bg-warm:     #181f28;
+  --surface:     #252d3a;
+  --bg-deep:     #12181f;
+  --ink:         #e8edf2;
+  --ink-soft:    #9daab5;
+  --ink-muted:   #5e6f7c;
+  --line:        #2a3340;
+  --line-soft:   #232d38;
+  --primary-soft:#0a2030;
+  --accent-soft: #2a1e10;
+
+  /* Dark neuromorphic shadows — pure dark, no white halo */
+  --neu-shadow:        4px 6px 18px rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.22);
+  --neu-shadow-sm:     2px 4px 12px rgba(0,0,0,0.35), 0 1px 3px rgba(0,0,0,0.18);
+  --neu-shadow-inset:  inset 3px 3px 10px rgba(0,0,0,0.42), inset 1px 1px 3px rgba(0,0,0,0.28);
+  --neu-shadow-hover:  6px 10px 28px rgba(0,0,0,0.52), 0 2px 6px rgba(0,0,0,0.28);
+  --neu-shadow-pressed:inset 4px 4px 14px rgba(0,0,0,0.48), inset 1px 1px 5px rgba(0,0,0,0.32);
+}
+
+/* Dark body */
+[data-theme="dark"] body {
+  color: var(--ink);
+  background: var(--bg);
+}
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4 { color: var(--ink); }
+
+/* Dark cards */
+[data-theme="dark"] .neu-card,
+[data-theme="dark"] .neu-card-inset,
+[data-theme="dark"] .neu-stat {
+  background: var(--bg);
+  border-color: rgba(255,255,255,0.05);
+}
+
+/* Dark page hero */
+[data-theme="dark"] .page-hero {
+  background: var(--bg-warm);
+  border-color: var(--line);
+}
+
+/* Dark mobile nav */
+[data-theme="dark"] .mobile-nav { background: var(--bg); }
+[data-theme="dark"] .mobile-nav a { color: var(--ink); border-color: var(--line); }
+
+/* Dark ghost button */
+[data-theme="dark"] .btn-ghost {
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow: var(--neu-shadow-sm);
+}
+[data-theme="dark"] .btn-ghost:hover { color: var(--primary); }
+
+/* Dark pill */
+[data-theme="dark"] .neu-pill {
+  background: var(--bg);
+  border-color: rgba(255,255,255,0.05);
+}
+
+/* Dark img placeholder */
+[data-theme="dark"] .img-ph {
+  background:
+    linear-gradient(135deg, rgba(0,96,144,0.12), rgba(184,138,62,0.08)),
+    repeating-linear-gradient(45deg, #232d38 0px, #232d38 2px, #1e2530 2px, #1e2530 4px);
+}
+[data-theme="dark"] .img-ph::after {
+  background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.04), transparent 65%);
+}
+[data-theme="dark"] .img-ph span {
+  background: rgba(30,37,48,0.95);
+  border-color: var(--line);
+  color: var(--ink-soft);
+}
+
+/* Dark toggle checkbox */
+[data-theme="dark"] .neu-toggle-track { background: var(--bg); }
+[data-theme="dark"] .neu-checkbox-box { background: var(--bg); }
+
+/* Dark form fields — replace the rgba(255,255,255,0.6) bright border */
+[data-theme="dark"] .field input,
+[data-theme="dark"] .field textarea,
+[data-theme="dark"] .field select {
+  border-color: rgba(255,255,255,0.06);
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* Dark legacy card border */
+[data-theme="dark"] .card {
+  background: var(--bg);
+  border-color: rgba(255,255,255,0.05);
+}
+
+/* Dark process connector line — uses var() already but ensure it reads correctly */
+[data-theme="dark"] .site-footer {
+  background: var(--bg-deep);
+}
+
+/* ── Dark Mode Icons — ALL iconify glyphs go white ──────────────
+   In dark mode every .iconify on the page becomes var(--ink)
+   (near-white #e8edf2). This covers contact cards, stat badges,
+   feature cards, process steps — everywhere.
+   Exception: icons inside .btn-primary (blue buttons) stay white
+   by inheritance and don't need an override.
+   ─────────────────────────────────────────────────────────── */
+[data-theme="dark"] .iconify {
+  color: var(--ink) !important;
+}
+
+/* Keep primary-button icons white (they already are — safety net) */
+[data-theme="dark"] .btn-primary .iconify {
+  color: #fff !important;
+}
+
+
+
+/* ── Neuromorphic Select / Dropdown ─────────────────────────────
+   Override the OS-default blue highlight on <select> options
+   with the site's neuromorphic dark palette.
+   ─────────────────────────────────────────────────────────── */
+
+/* Base select — light mode (already styled in .field select) */
+.field select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+}
+
+/* Dark mode select element */
+[data-theme="dark"] .field select {
+  background: var(--bg);
+  color: var(--ink);
+  border-color: rgba(255,255,255,0.06);
+}
+
+/* Option elements in dark mode — uses system colour-scheme
+   so the browser renders the dropdown panel dark */
+[data-theme="dark"] select option {
+  background: #1e2530;
+  color: #e8edf2;
+}
+
+/* Selected / highlighted option */
+[data-theme="dark"] select option:checked,
+[data-theme="dark"] select option:hover {
+  background: #006090;
+  color: #ffffff;
+}
+
+/* Tell the browser to render all native widgets in dark mode */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* ── Neuromorphic Theme Toggle Button ── */
+.theme-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: box-shadow .2s ease, transform .15s ease;
+  /* light mode default */
+  background: rgba(255,255,255,0.12);
+  box-shadow:
+    3px 3px 8px rgba(0,0,0,0.35),
+    -1px -1px 4px rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.85);
+}
+.theme-toggle-btn:hover {
+  box-shadow:
+    5px 5px 14px rgba(0,0,0,0.45),
+    -2px -2px 6px rgba(255,255,255,0.07);
+  transform: translateY(-1px);
+}
+.theme-toggle-btn:active {
+  box-shadow:
+    inset 3px 3px 8px rgba(0,0,0,0.38),
+    inset -1px -1px 4px rgba(255,255,255,0.05);
+  transform: translateY(0);
+}
+.theme-toggle-btn svg { display: block; pointer-events: none; }
+
+/* ── Cookie Banner ── */
+.cookie-banner {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: min(640px, calc(100vw - 32px));
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 20px 24px;
+  box-shadow: var(--neu-shadow-hover);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.cookie-banner p {
+  flex: 1 1 280px;
+  font-size: 0.82rem;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0;
+}
+.cookie-banner .actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  align-items: center;
+}
+/* Dark cookie banner */
+[data-theme="dark"] .cookie-banner {
+  background: var(--bg);
+  border-color: rgba(255,255,255,0.05);
+}
+
+/* ── Shared entrance animation ── */
+@keyframes kt-fade-up {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.anim-fade-up       { animation: kt-fade-up 0.75s ease both; }
+.anim-fade-up-1     { animation-delay: 0.10s; }
+.anim-fade-up-2     { animation-delay: 0.20s; }
+.anim-fade-up-3     { animation-delay: 0.30s; }
+
+/* Hero section starts invisible; HeroParallaxDriver fades it in */
+#hero-section { opacity: 0; }
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+
+/* Smooth theme transition — background, text, and border colours animate
+   when [data-theme="dark"] is toggled on the <html> element */
+html, html * {
+  transition:
+    background-color 0.3s ease,
+    color 0.25s ease,
+    border-color 0.25s ease,
+    box-shadow 0.3s ease;
+}
+
+body {
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.65;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+a { color: var(--primary); text-decoration: none; transition: color .15s; }
+a:hover { color: var(--primary-dark); }
+img { max-width: 100%; display: block; }
+button { font: inherit; cursor: pointer; border: none; background: none; color: inherit; }
+
+h1, h2, h3, h4 {
+  font-family: var(--serif);
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  color: var(--ink);
+  text-wrap: balance;
+}
+h1 { font-size: clamp(2.4rem, 5vw, 4.4rem); font-weight: 400; letter-spacing: -0.02em; }
+h2 { font-size: clamp(1.8rem, 3.4vw, 2.8rem); font-weight: 400; letter-spacing: -0.015em; }
+h3 { font-size: clamp(1.3rem, 2vw, 1.6rem); font-weight: 500; }
+h4 { font-size: 1.1rem; font-weight: 600; }
+p { text-wrap: pretty; }
+
+.container { max-width: var(--container); margin: 0 auto; padding: 0 32px; }
+.container-narrow { max-width: 760px; margin: 0 auto; padding: 0 32px; }
+
+/* ——— Neuromorphic Buttons ——— */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 28px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: var(--radius-sm);
+  transition: all .2s ease;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+  position: relative;
+}
+.btn-primary {
+  background: linear-gradient(135deg, #006090, #004a70);
+  color: white;
+  box-shadow: 4px 6px 14px rgba(0,0,0,0.28);
+}
+.btn-primary:hover {
+  background: linear-gradient(135deg, #0072ab, #005580);
+  color: white;
+  box-shadow: 6px 8px 18px rgba(0,0,0,0.32);
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.22);
+  transform: translateY(0);
+}
+.btn-ghost {
+  background: var(--bg);
+  color: var(--ink);
+  box-shadow: var(--neu-shadow-sm);
+}
+.btn-ghost:hover {
+  color: var(--primary);
+  box-shadow: var(--neu-shadow);
+  transform: translateY(-1px);
+}
+.btn-accent {
+  background: linear-gradient(135deg, #c89a4e, #a07530);
+  color: white;
+  box-shadow: 4px 6px 14px rgba(0,0,0,0.26);
+}
+.btn-accent:hover {
+  background: linear-gradient(135deg, #d4a85a, #b08040);
+  color: white;
+  box-shadow: 6px 8px 18px rgba(0,0,0,0.30);
+  transform: translateY(-1px);
+}
+.btn-sm { padding: 9px 18px; font-size: 0.85rem; }
+.btn-lg { padding: 18px 36px; font-size: 1rem; }
+
+/* ——— Donate Strip ——— */
+.donate-strip {
+  background: linear-gradient(90deg, #004a70, #006090, #004a70);
+  color: white;
+  padding: 13px 0;
+  font-size: 0.87rem;
+  text-align: center;
+  letter-spacing: 0.01em;
+}
+.donate-strip a {
+  color: #ffd88a;
+  text-decoration: underline;
+  text-decoration-color: rgba(255,216,138,0.5);
+  text-underline-offset: 3px;
+  font-weight: 600;
+  margin-left: 8px;
+}
+.donate-strip a:hover { text-decoration-color: #ffd88a; color: white; }
+
+/* ——— Header ——— */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(10, 52, 75, 0.93);
+  backdrop-filter: saturate(160%) blur(18px);
+  -webkit-backdrop-filter: saturate(160%) blur(18px);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.28);
+}
+.header-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: 84px;
+  padding: 0 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.brand { display: flex; align-items: center; gap: 16px; color: white; }
+.brand img {
+  height: 48px;
+  width: auto;
+  flex-shrink: 0;
+  object-fit: contain;
+  border-radius: 6px;
+  filter: brightness(0) invert(1) opacity(0.95);
+}
+.brand-tag {
+  display: block;
+  font-family: var(--sans);
+  font-size: 0.64rem;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  color: rgba(255,255,255,0.55);
+  font-weight: 600;
+  padding-left: 16px;
+  border-left: 1px solid rgba(255,255,255,0.18);
+  line-height: 1.3;
+  max-width: 110px;
+}
+@media (max-width: 720px) { .brand-tag { display: none; } }
+/* Neuromorphic pill nav track */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: nowrap;
+  background: rgba(0, 20, 36, 0.45);
+  border-radius: 100px;
+  padding: 5px;
+  box-shadow:
+    inset 3px 3px 8px rgba(0, 0, 0, 0.45),
+    inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+}
+.nav a {
+  padding: 8px 14px;
+  font-size: 0.84rem;
+  color: rgba(255, 255, 255, 0.60);
+  font-weight: 500;
+  border-radius: 100px;
+  transition: color .18s;
+  white-space: nowrap;
+  line-height: 1;
+}
+.nav a:hover {
+  color: rgba(255, 255, 255, 0.90);
+}
+.nav a.active {
+  color: #fff;
+  font-weight: 700;
+  background: linear-gradient(135deg, #006090, #004a70);
+  box-shadow:
+    4px 4px 10px rgba(0, 0, 0, 0.45),
+    -2px -2px 6px rgba(255, 255, 255, 0.06),
+    0 0 0 1px rgba(255,255,255,0.08);
+  transition: none;
+}
+.header-cta { display: flex; align-items: center; gap: 10px; }
+.menu-btn {
+  display: none;
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.15);
+  color: white;
+}
+@media (max-width: 1180px) { .header-cta .btn-ghost { display: none; } }
+@media (max-width: 1080px) { .nav { display: none; } .menu-btn { display: inline-flex; } }
+
+.mobile-nav {
+  position: fixed;
+  inset: 84px 0 0 0;
+  background: var(--bg);
+  z-index: 99;
+  padding: 32px;
+  overflow-y: auto;
+  display: none;
+}
+.mobile-nav.open { display: block; }
+.mobile-nav a {
+  display: block;
+  padding: 18px 0;
+  font-family: var(--serif);
+  font-size: 1.4rem;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink);
+}
+
+/* ——— Neuromorphic Cards ——— */
+.neu-card {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 36px;
+  box-shadow: var(--neu-shadow);
+  transition: all .25s ease;
+  border: 1px solid rgba(255,255,255,0.7);
+}
+.neu-card:hover {
+  box-shadow: var(--neu-shadow-hover);
+  transform: translateY(-4px);
+}
+.neu-card-inset {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 28px;
+  box-shadow: var(--neu-shadow-inset);
+  border: 1px solid rgba(255,255,255,0.4);
+}
+
+/* ——— Stat Badge ——— */
+.neu-stat {
+  background: var(--bg);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  box-shadow: var(--neu-shadow);
+  text-align: center;
+  border: 1px solid rgba(255,255,255,0.7);
+  transition: all .25s;
+}
+.neu-stat:hover { transform: translateY(-3px); box-shadow: var(--neu-shadow-hover); }
+.neu-stat-num {
+  font-family: var(--serif);
+  font-size: clamp(2.4rem, 4vw, 3.2rem);
+  color: var(--primary);
+  line-height: 1;
+  margin-bottom: 8px;
+  font-weight: 400;
+}
+.neu-stat-label { font-size: 0.88rem; color: var(--ink-soft); font-weight: 500; }
+
+
+
+/* ——— Badge / Pill ——— */
+.neu-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--bg);
+  box-shadow: var(--neu-shadow-sm);
+  color: var(--primary);
+  border: 1px solid rgba(255,255,255,0.7);
+}
+
+/* ——— Eyebrow ——— */
+.eyebrow {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: var(--primary);
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.section { padding: 100px 0; }
+.section-tight { padding: 64px 0; }
+
+/* ——— Page Hero ——— */
+.page-hero {
+  padding: 80px 0 64px;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-warm);
+}
+.page-hero h1 { max-width: 800px; }
+.page-hero p.lede {
+  font-family: var(--serif);
+  font-size: clamp(1.15rem, 1.8vw, 1.4rem);
+  color: var(--ink-soft);
+  max-width: 680px;
+  margin-top: 24px;
+  line-height: 1.5;
+  font-weight: 350;
+}
+.crumb {
+  font-size: 0.82rem;
+  color: var(--ink-muted);
+  margin-bottom: 24px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.crumb a { color: var(--ink-muted); }
+.crumb a:hover { color: var(--primary); }
+
+/* ——— Image Placeholder ——— */
+.img-ph {
+  background:
+    linear-gradient(135deg, rgba(0,96,144,0.05), rgba(184,138,62,0.05)),
+    repeating-linear-gradient(45deg, #dde0e8 0px, #dde0e8 2px, #d4d8e2 2px, #d4d8e2 4px);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--ink-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: var(--neu-shadow);
+}
+.img-ph::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 30%, rgba(255,255,255,0.5), transparent 65%);
+  pointer-events: none;
+}
+.img-ph span {
+  position: relative;
+  z-index: 1;
+  background: rgba(238,240,244,0.9);
+  padding: 6px 10px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+}
+
+/* ——— Card (legacy compat) ——— */
+.card {
+  background: var(--bg);
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--neu-shadow);
+  transition: all .2s;
+}
+.card-hover:hover {
+  box-shadow: var(--neu-shadow-hover);
+  transform: translateY(-3px);
+}
+
+/* ——— Form ——— */
+.field { display: block; margin-bottom: 24px; }
+.field label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--ink-soft);
+  margin-bottom: 8px;
+}
+.field input, .field textarea, .field select {
+  width: 100%;
+  padding: 14px 16px;
+  font: inherit;
+  font-size: 1rem;
+  background: var(--bg);
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  box-shadow: var(--neu-shadow-inset);
+  transition: box-shadow .2s;
+  font-family: var(--sans);
+}
+.field textarea { min-height: 140px; resize: vertical; line-height: 1.55; }
+.field input:focus, .field textarea:focus, .field select:focus {
+  outline: none;
+  box-shadow: var(--neu-shadow-inset), 0 0 0 3px rgba(0,96,144,0.15);
+}
+
+/* ——— Cookie Banner ——— */
+.cookie-banner {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  right: 24px;
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--bg);
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  box-shadow: var(--neu-shadow-hover);
+  z-index: 90;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: center;
+  justify-content: space-between;
+}
+.cookie-banner p { font-size: 0.9rem; color: var(--ink-soft); flex: 1; min-width: 280px; }
+.cookie-banner .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ——— Footer ——— */
+.site-footer {
+  background: var(--bg-deep);
+  color: #c8d1d8;
+  padding: 80px 0 32px;
+  margin-top: 120px;
+  font-size: 0.92rem;
+}
+.site-footer h4 {
+  color: white;
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: 0.76rem;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  margin-bottom: 18px;
+}
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 56px;
+  padding-bottom: 56px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.footer-brand { max-width: 340px; }
+.footer-brand img { height: 44px; width: auto; margin-bottom: 20px; filter: brightness(0) invert(1) opacity(0.95); object-fit: contain; border-radius: 4px; }
+.footer-brand p { color: #95a3ad; line-height: 1.7; }
+.footer-grid ul { list-style: none; }
+.footer-grid li { margin-bottom: 12px; }
+.footer-grid a { color: #c8d1d8; }
+.footer-grid a:hover { color: white; }
+.footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 32px;
+  flex-wrap: wrap;
+  gap: 16px;
+  font-size: 0.82rem;
+  color: #7a8590;
+}
+@media (max-width: 800px) { .footer-grid { grid-template-columns: 1fr 1fr; gap: 40px; } }
+@media (max-width: 500px) { .footer-grid { grid-template-columns: 1fr; } }
+
+/* ——— Animations ——— */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: var(--neu-shadow); }
+  50%       { box-shadow: var(--neu-shadow-hover); }
+}
+/* anim-fade-up utilities defined at top of file under @keyframes kt-fade-up */
+
+/* ——— Utilities ——— */
+.text-center { text-align: center; }
+.text-muted { color: var(--ink-muted); }
+.text-soft { color: var(--ink-soft); }
+.mb-0 { margin-bottom: 0; }
+.mb-1 { margin-bottom: 12px; }
+.mb-2 { margin-bottom: 24px; }
+.mb-3 { margin-bottom: 40px; }
+
+/* ——— Scrollbar ——— */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--line); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--ink-muted); }
+
+/* ——— Neuromorphic Toggle ——— */
+.neu-toggle-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 20px;
+}
+/* button reset so it behaves like the track div */
+button.neu-toggle-track {
+  appearance: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+.neu-toggle-track {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  border-radius: 14px;
+  background: var(--bg);
+  box-shadow: var(--neu-shadow-inset);
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+  flex-shrink: 0;
+  display: block;
+}
+.neu-toggle-track.on {
+  background: linear-gradient(135deg, #006090, #004a70);
+  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.28), inset -2px -2px 6px rgba(255,255,255,0.08);
+}
+.neu-toggle-thumb {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 2px 4px 8px rgba(0,0,0,0.22);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+  display: block;
+}
+.neu-toggle-track.on .neu-toggle-thumb {
+  transform: translateX(24px);
+  box-shadow: 2px 2px 6px rgba(0,0,0,0.3), -1px -1px 4px rgba(255,255,255,0.1);
+}
+.neu-toggle-label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--ink-soft);
+  cursor: pointer;
+}
+.neu-toggle-track:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
+/* ——— Neuromorphic Checkbox ——— */
+.neu-checkbox-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  cursor: pointer;
+  user-select: none;
+  margin-bottom: 20px;
+}
+.neu-checkbox-box {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  background: var(--bg);
+  box-shadow: var(--neu-shadow-inset);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 2px;
+  transition: background 0.22s ease, box-shadow 0.22s ease;
+}
+.neu-checkbox-box.checked {
+  background: linear-gradient(135deg, #006090, #004a70);
+  box-shadow: inset 2px 2px 6px rgba(0,0,0,0.22), inset -1px -1px 4px rgba(255,255,255,0.08);
+}
+.check-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 0.18s ease, transform 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.neu-checkbox-box.checked .check-mark {
+  opacity: 1;
+  transform: scale(1);
+}
+.check-mark svg {
+  display: block;
+  flex-shrink: 0;
+}
+.neu-checkbox-label {
+  font-size: 0.88rem;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+.neu-checkbox-wrap:focus-visible .neu-checkbox-box {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+}
+
