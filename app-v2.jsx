@@ -1,5 +1,12 @@
 // App v2 — uses v2 layout + HomePageV2, falls back to v1 pages for all other routes
 
+// ── Ensure bare URL always opens homepage ──
+// If there is no hash (or just "#"), redirect to /#/home immediately.
+if (!window.location.hash || window.location.hash === '#' || window.location.hash === '#/') {
+  window.location.replace(window.location.pathname + '#/home');
+}
+
+
 const TWEAK_DEFAULTS = {
   "primaryColor": "#0099cc",
   "accentColor": "#1a9fd4",
