@@ -1,5 +1,160 @@
-// Katie Trust v2 — Neuromorphic HomePage
+// Katie Trust v3 — Neuromorphic HomePage
 // Neuromorphic components: Hero, Feature Cards, Stats, Mission Band, Process Stepper, Testimonial, Donate CTA
+
+/* ─────────────────────────────────────────────
+   GENERATIVE MOUNTAIN SCENE — Three.js background
+───────────────────────────────────────────── */
+function MountainScene() {
+  const mountRef = React.useRef(null);
+  const lightRef = React.useRef(null);
+
+  React.useEffect(() => {
+    if (typeof THREE === 'undefined') return;
+    const el = mountRef.current;
+    if (!el) return;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, el.clientWidth / el.clientHeight, 0.1, 100);
+    camera.position.set(0, 1.5, 3);
+    camera.rotation.x = -0.3;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(el.clientWidth, el.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    el.appendChild(renderer.domElement);
+
+    const geometry = new THREE.PlaneGeometry(14, 9, 160, 160);
+
+    const material = new THREE.ShaderMaterial({
+      side: THREE.DoubleSide,
+      wireframe: false,
+      uniforms: {
+        time: { value: 0 },
+        pointLightPosition: { value: new THREE.Vector3(0, 0, 5) },
+        color: { value: new THREE.Color('#4fc3f7') },
+      },
+      vertexShader: `
+        uniform float time;
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+        vec3 mod289v3(vec3 x){return x-floor(x*(1./289.))*289.;}
+        vec4 mod289v4(vec4 x){return x-floor(x*(1./289.))*289.;}
+        vec4 permute(vec4 x){return mod289v4(((x*34.)+1.)*x);}
+        vec4 taylorInvSqrt(vec4 r){return 1.79284291400159-0.85373472095314*r;}
+        float snoise(vec3 v){
+          const vec2 C=vec2(1./6.,1./3.);
+          const vec4 D=vec4(0.,.5,1.,2.);
+          vec3 i=floor(v+dot(v,C.yyy));
+          vec3 x0=v-i+dot(i,C.xxx);
+          vec3 g=step(x0.yzx,x0.xyz);
+          vec3 l=1.-g;
+          vec3 i1=min(g.xyz,l.zxy);
+          vec3 i2=max(g.xyz,l.zxy);
+          vec3 x1=x0-i1+C.xxx;
+          vec3 x2=x0-i2+C.yyy;
+          vec3 x3=x0-D.yyy;
+          i=mod289v3(i);
+          vec4 p=permute(permute(permute(
+            i.z+vec4(0.,i1.z,i2.z,1.))
+            +i.y+vec4(0.,i1.y,i2.y,1.))
+            +i.x+vec4(0.,i1.x,i2.x,1.));
+          float n_=0.142857142857;
+          vec3 ns=n_*D.wyz-D.xzx;
+          vec4 j=p-49.*floor(p*ns.z*ns.z);
+          vec4 x_=floor(j*ns.z);
+          vec4 y_=floor(j-7.*x_);
+          vec4 x=x_*ns.x+ns.yyyy;
+          vec4 y=y_*ns.x+ns.yyyy;
+          vec4 h=1.-abs(x)-abs(y);
+          vec4 b0=vec4(x.xy,y.xy);
+          vec4 b1=vec4(x.zw,y.zw);
+          vec4 s0=floor(b0)*2.+1.;
+          vec4 s1=floor(b1)*2.+1.;
+          vec4 sh=-step(h,vec4(0.));
+          vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;
+          vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+          vec3 p0=vec3(a0.xy,h.x);
+          vec3 p1=vec3(a0.zw,h.y);
+          vec3 p2=vec3(a1.xy,h.z);
+          vec3 p3=vec3(a1.zw,h.w);
+          vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+          p0*=norm.x;p1*=norm.y;p2*=norm.z;p3*=norm.w;
+          vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);
+          m=m*m;
+          return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),dot(p2,x2),dot(p3,x3)));
+        }
+        void main(){
+          vNormal=normal; vPosition=position;
+          float d=snoise(vec3(position.x*.8,position.y*.8-time*.18,0.))*.65;
+          d+=snoise(vec3(position.x*1.6,position.y*1.6-time*.18,0.))*.32;
+          vec3 np=position+normal*d;
+          gl_Position=projectionMatrix*modelViewMatrix*vec4(np,1.);
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 color;
+        uniform vec3 pointLightPosition;
+        varying vec3 vNormal;
+        varying vec3 vPosition;
+        void main(){
+          vec3 n=normalize(vNormal);
+          vec3 ld=normalize(pointLightPosition-vPosition);
+          float diff=max(dot(n,ld),0.);
+          float fres=pow(1.-dot(n,vec3(0.,0.,1.)),2.);
+          vec3 col=color*diff+color*fres*.5;
+          gl_FragColor=vec4(col,.85);
+        }
+      `,
+      transparent: true,
+    });
+
+    const mesh = new THREE.Mesh(geometry, material);
+    mesh.rotation.x = -Math.PI / 2;
+    scene.add(mesh);
+
+    const pointLight = new THREE.PointLight(0xffffff, 1, 100);
+    pointLight.position.set(0, 0, 5);
+    lightRef.current = pointLight;
+    scene.add(pointLight);
+
+    let frameId;
+    const animate = (t) => {
+      material.uniforms.time.value = t * 0.0003;
+      renderer.render(scene, camera);
+      frameId = requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+
+    const onResize = () => {
+      if (!el) return;
+      camera.aspect = el.clientWidth / el.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(el.clientWidth, el.clientHeight);
+    };
+    const onMouseMove = (e) => {
+      const x = (e.clientX / window.innerWidth) * 2 - 1;
+      const y = -(e.clientY / window.innerHeight) * 2 + 1;
+      const pos = new THREE.Vector3(x * 5, 2, 2 - y * 2);
+      if (lightRef.current) lightRef.current.position.copy(pos);
+      material.uniforms.pointLightPosition.value = pos;
+    };
+
+    window.addEventListener('resize', onResize);
+    window.addEventListener('mousemove', onMouseMove, { passive: true });
+
+    return () => {
+      cancelAnimationFrame(frameId);
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('mousemove', onMouseMove);
+      if (el && el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
+      geometry.dispose();
+      material.dispose();
+      renderer.dispose();
+    };
+  }, []);
+
+  return <div ref={mountRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0 }} />;
+}
 
 function NeuFeatureCard({ eyebrow, title, body, cta, to, icon, delay = 0 }) {
   const [hovered, setHovered] = React.useState(false);
@@ -10,22 +165,16 @@ function NeuFeatureCard({ eyebrow, title, body, cta, to, icon, delay = 0 }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Icon badge */}
-      <div style={{
-        width: 52, height: 52, borderRadius: 14,
-        background: hovered ? 'var(--primary-soft)' : 'var(--bg)',
-        boxShadow: 'var(--neu-shadow-sm)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        marginBottom: 24,
-        transition: 'all .25s',
-      }}>
-        <span className="iconify" data-icon={icon} style={{ fontSize: 22, color: 'var(--primary)' }} />
+      {/* Flat icon badge — uses unified .icon-box system */}
+      <div className="icon-box icon-box--lg" style={{ marginBottom: 24 }}>
+        <span className="iconify" data-icon={icon} />
       </div>
+      {/* Aqua eyebrow pill */}
       <div className="eyebrow" style={{ marginBottom: 10 }}>{eyebrow}</div>
       <h3 style={{ marginBottom: 14, minHeight: 80, fontSize: '1.25rem' }}>{title}</h3>
       <p style={{ color: 'var(--ink-soft)', marginBottom: 28, fontSize: '0.95rem', lineHeight: 1.65 }}>{body}</p>
-      {/* Divider */}
-      <div style={{ height: 1, background: 'linear-gradient(90deg, var(--primary-soft), transparent)', margin: '0 0 20px' }} />
+      {/* Teal divider */}
+      <div style={{ height: 1, background: 'linear-gradient(90deg, rgba(79,195,247,0.30), transparent)', margin: '0 0 20px' }} />
       <Link to={to} style={{
         display: 'inline-flex', alignItems: 'center', gap: 6,
         fontWeight: 600, fontSize: '0.9rem', color: 'var(--primary)',
@@ -34,14 +183,24 @@ function NeuFeatureCard({ eyebrow, title, body, cta, to, icon, delay = 0 }) {
         {cta}
         <span className="iconify" data-icon="mdi:arrow-right" style={{ fontSize: 16 }} />
       </Link>
-      {/* Accent corner dot */}
+      {/* Live dot */}
       <div style={{
-        position: 'absolute', top: 24, right: 24,
-        width: 10, height: 10, borderRadius: '50%',
-        background: 'var(--accent)',
-        opacity: hovered ? 1 : 0.3,
-        transition: 'opacity .25s',
-      }} />
+        position: 'absolute', top: 22, right: 22,
+        display: 'inline-flex', alignItems: 'center', gap: 5,
+        padding: '3px 10px 3px 6px',
+        borderRadius: 100,
+        background: hovered ? 'rgba(79,195,247,0.12)' : 'rgba(79,195,247,0.07)',
+        border: '1px solid rgba(79,195,247,0.25)',
+        fontSize: '0.65rem', fontWeight: 700,
+        letterSpacing: '0.08em',
+        color: 'var(--primary)',
+        fontFamily: 'var(--sans)',
+        textTransform: 'uppercase',
+        transition: 'all .25s',
+      }}>
+        <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4fc3f7', boxShadow: '0 0 6px rgba(79,195,247,0.8)' }} />
+        Live
+      </div>
     </div>
   );
 }
@@ -49,14 +208,8 @@ function NeuFeatureCard({ eyebrow, title, body, cta, to, icon, delay = 0 }) {
 function NeuStatCard({ num, label, icon, delay = 0 }) {
   return (
     <div className="neu-stat anim-fade-up" style={{ animationDelay: `${delay}s` }}>
-      <div style={{
-        width: 44, height: 44, borderRadius: 12,
-        background: 'var(--primary-soft)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        margin: '0 auto 16px',
-        boxShadow: 'var(--neu-shadow-sm)',
-      }}>
-        <span className="iconify" data-icon={icon} style={{ fontSize: 20, color: 'var(--primary)' }} />
+      <div className="icon-box" style={{ margin: '0 auto 16px' }}>
+        <span className="iconify" data-icon={icon} />
       </div>
       <div className="neu-stat-num">{num}</div>
       <div className="neu-stat-label">{label}</div>
@@ -64,37 +217,133 @@ function NeuStatCard({ num, label, icon, delay = 0 }) {
   );
 }
 
-function NeuProcessStep({ num, title, body, isLast }) {
+function NeuProcessStep({ num, title, body, isLast, isActive }) {
   return (
     <div style={{ display: 'flex', gap: 24, position: 'relative' }}>
       {/* Connector line */}
       {!isLast && (
         <div style={{
-          position: 'absolute', left: 27, top: 56, bottom: -24,
+          position: 'absolute', left: 27, top: 58, bottom: -24,
           width: 2,
-          background: 'linear-gradient(to bottom, var(--primary-soft), transparent)',
+          background: 'linear-gradient(to bottom, rgba(0,153,204,0.55), rgba(0,153,204,0.08))',
         }} />
       )}
       {/* Step badge */}
       <div style={{ flexShrink: 0 }}>
         <div style={{
           width: 56, height: 56, borderRadius: '50%',
-          background: 'var(--bg)',
-          boxShadow: 'var(--neu-shadow)',
+          background: isActive
+            ? 'linear-gradient(135deg, #0099cc 0%, #0077aa 100%)'
+            : 'var(--surface)',
+          backdropFilter: 'blur(18px) saturate(170%)',
+          WebkitBackdropFilter: 'blur(18px) saturate(170%)',
+          border: isActive
+            ? '2px solid rgba(0,153,204,0.65)'
+            : '1px solid var(--line)',
+          boxShadow: isActive
+            ? '0 0 0 0 rgba(79,195,247,0.5), 0 4px 24px rgba(0,153,204,0.40), inset 0 1px 0 rgba(255,255,255,0.28)'
+            : 'var(--neu-shadow-sm)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: 'var(--serif)',
-          fontSize: '1.1rem',
-          color: 'var(--primary)',
-          fontWeight: 500,
-          border: '1px solid var(--line-soft)',
+          fontFamily: 'var(--sans)',
+          fontSize: '0.85rem',
+          color: isActive ? '#fff' : 'var(--ink-soft)',
+          fontWeight: isActive ? 700 : 500,
+          animation: isActive ? 'stepper-glow 2.4s ease-in-out infinite' : 'none',
+          position: 'relative',
+          zIndex: 1,
+          transition: 'all .3s',
         }}>
-          {num}
+          {isActive
+            ? <span className="iconify" data-icon="mdi:check" style={{ fontSize: 22, color: '#fff' }} />
+            : num}
         </div>
       </div>
-      <div style={{ paddingBottom: 36, paddingTop: 14 }}>
-        <h4 style={{ marginBottom: 8, fontFamily: 'var(--sans)', fontSize: '1rem', fontWeight: 600 }}>{title}</h4>
-        <p style={{ color: 'var(--ink-soft)', fontSize: '0.93rem', maxWidth: 420, lineHeight: 1.65 }}>{body}</p>
+      <div style={{ paddingBottom: 36, paddingTop: 12 }}>
+        <h4 style={{
+          marginBottom: 6,
+          fontFamily: 'var(--sans)',
+          fontSize: '1rem',
+          fontWeight: 600,
+          color: 'var(--ink)',
+        }}>{title}</h4>
+        <p style={{
+          color: 'var(--ink-soft)',
+          fontSize: '0.93rem',
+          maxWidth: 420,
+          lineHeight: 1.65,
+        }}>{body}</p>
       </div>
+    </div>
+  );
+}
+
+/* ─────────────────────────────────────────────
+   TILT CARD — 3-D perspective + cursor spotlight
+───────────────────────────────────────────── */
+function TiltCard({ children, tiltLimit = 14, scale = 1.04, perspective = 1100, effect = 'evade', spotlight = true, style }) {
+  const cardRef = React.useRef(null);
+  const [transform, setTransform] = React.useState(
+    `perspective(${perspective}px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)`
+  );
+  const [spot, setSpot] = React.useState({ x: 50, y: 50 });
+  const [hovered, setHovered] = React.useState(false);
+  const dir = effect === 'evade' ? -1 : 1;
+
+  function onMove(e) {
+    const el = cardRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top)  / r.height;
+    const xRot = (py - 0.5) * (tiltLimit * 2) * dir;
+    const yRot = (px - 0.5) * -(tiltLimit * 2) * dir;
+    setTransform(
+      `perspective(${perspective}px) rotateX(${xRot}deg) rotateY(${yRot}deg) scale3d(${scale},${scale},${scale})`
+    );
+    if (spotlight) setSpot({ x: px * 100, y: py * 100 });
+  }
+
+  function onLeave() {
+    setTransform(`perspective(${perspective}px) rotateX(0deg) rotateY(0deg) scale3d(1,1,1)`);
+    setHovered(false);
+  }
+
+  return (
+    <div
+      ref={cardRef}
+      onPointerEnter={() => setHovered(true)}
+      onPointerMove={onMove}
+      onPointerLeave={onLeave}
+      style={{
+        position: 'relative',
+        overflow: 'hidden',
+        willChange: 'transform',
+        transform,
+        transition: 'transform 0.22s ease-out',
+        transformStyle: 'preserve-3d',
+        ...style,
+      }}
+    >
+      {children}
+      {spotlight && (
+        <div style={{
+          pointerEvents: 'none',
+          position: 'absolute', inset: 0, zIndex: 10,
+          overflow: 'hidden',
+          opacity: hovered ? 1 : 0,
+          transition: 'opacity 0.3s',
+        }}>
+          <div style={{
+            position: 'absolute',
+            width: '200%', height: '200%',
+            borderRadius: '50%',
+            left: `${spot.x}%`,
+            top:  `${spot.y}%`,
+            transform: 'translate(-50%, -50%)',
+            background: 'radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 42%)',
+          }} />
+        </div>
+      )}
     </div>
   );
 }
@@ -106,10 +355,9 @@ function NeuTestimonialCard({ quote, name, meta }) {
       <div style={{
         fontFamily: 'var(--serif)',
         fontSize: '6rem',
-        color: 'var(--accent)',
+        color: 'var(--primary)',
         lineHeight: 0.6,
         marginBottom: 24,
-        opacity: 0.6,
       }}>"</div>
       <p style={{
         fontFamily: 'var(--serif)',
@@ -120,13 +368,8 @@ function NeuTestimonialCard({ quote, name, meta }) {
         color: 'var(--ink)',
       }}>{quote}</p>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div style={{
-          width: 40, height: 40, borderRadius: '50%',
-          background: 'var(--primary-soft)',
-          boxShadow: 'var(--neu-shadow-sm)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-        }}>
-          <span className="iconify" data-icon="mdi:account" style={{ fontSize: 20, color: 'var(--primary)' }} />
+        <div className="icon-box icon-box--sm">
+          <span className="iconify" data-icon="mdi:account" />
         </div>
         <div>
           <div style={{ fontWeight: 600, fontSize: '0.9rem', color: 'var(--ink)' }}>{name}</div>
@@ -145,9 +388,9 @@ function HeroCinematicContent() {
     <div style={{
       position: 'absolute', inset: 0, zIndex: 10,
       display: 'flex', flexDirection: 'column',
-      justifyContent: 'flex-end', alignItems: 'flex-start',
+      justifyContent: 'center', alignItems: 'flex-start',
       padding: 'clamp(32px, 5vw, 72px) clamp(24px, 6vw, 96px)',
-      paddingBottom: 'clamp(48px, 7vh, 100px)',
+      paddingTop: 'clamp(80px, 14vh, 140px)',
     }}>
 
       {/* Overline — plain text, no pill */}
@@ -205,9 +448,9 @@ function HeroCinematicContent() {
       </p>
 
       {/* CTA row */}
-      <div style={{
+      <div className="kt-hero-cta-row" style={{
         display: 'flex', gap: 14, flexWrap: 'wrap',
-        marginBottom: 'clamp(32px, 5vh, 64px)',
+        marginBottom: 'clamp(20px, 3vh, 36px)',
         animation: 'kt-fade-up 0.8s 0.32s ease both',
       }}>
         <Link to="contact" style={{
@@ -247,21 +490,26 @@ function HeroCinematicContent() {
         </Link>
       </div>
 
-      {/* Trust badge strip — plain text */}
+      {/* Trust badge strip — aqua pill tags */}
       <div style={{
-        display: 'flex', gap: 20, flexWrap: 'wrap',
+        display: 'flex', gap: 10, flexWrap: 'wrap',
         animation: 'kt-fade-up 0.8s 0.44s ease both',
       }}>
-        {['Independent &amp; confidential', 'No cost to families', 'Trauma-informed care'].map((label, i) => (
+        {['Independent & confidential', 'No cost to families', 'Trauma-informed care'].map((label, i) => (
           <div key={i} style={{
-            display: 'flex', alignItems: 'center', gap: 6,
-            fontSize: '0.78rem', fontWeight: 500,
-            color: 'rgba(255,255,255,0.72)',
+            display: 'inline-flex', alignItems: 'center',
+            padding: '5px 14px',
+            borderRadius: 100,
+            background: 'rgba(14,96,120,0.35)',
+            backdropFilter: 'blur(14px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(14px) saturate(180%)',
+            border: '1px solid rgba(79,195,247,0.25)',
+            color: '#81d4fa',
+            fontSize: '0.75rem',
+            fontWeight: 600,
             fontFamily: 'var(--sans)',
-            letterSpacing: '0.01em',
+            letterSpacing: '0.04em',
           }}>
-            <span className="iconify" data-icon="mdi:check"
-              style={{ fontSize: 13, color: '#81d4fa', flexShrink: 0 }} />
             <span dangerouslySetInnerHTML={{ __html: label }} />
           </div>
         ))}
@@ -431,10 +679,19 @@ function HomePageV2() {
       </section>
 
       {/* ——— HOW WE CAN HELP ——— */}
-      <section className="section">
-        <div className="container">
+      <section style={{ position: 'relative', overflow: 'hidden', background: 'var(--bg)', padding: '100px 0' }}>
+        {/* Subtle teal ambient orb */}
+        <div style={{
+          position: 'absolute', top: '-10%', right: '-5%',
+          width: 500, height: 500, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(79,195,247,0.04) 0%, transparent 65%)',
+          pointerEvents: 'none',
+        }} />
+        <div className="container" style={{ position: 'relative', zIndex: 2 }}>
           <div style={{ textAlign: 'center', marginBottom: 64 }}>
-            <div className="eyebrow">How we can help</div>
+            {/* No color override — eyebrow uses var(--primary) on light bg */}
+            <div className="eyebrow" style={{ margin: '0 auto 20px' }}>How we can help</div>
+            {/* h2 uses var(--ink) via CSS — no hardcoded white */}
             <h2 style={{ maxWidth: 680, margin: '0 auto' }}>Whoever you are, there is a way to begin.</h2>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }} data-three-col>
@@ -447,55 +704,74 @@ function HomePageV2() {
 
       {/* ——— MISSION BAND ——— */}
       <section style={{
-        background: 'linear-gradient(135deg, #004a70 0%, #006090 50%, #004a70 100%)',
-        color: 'white',
+        background: 'var(--bg-warm)',
         padding: '100px 0',
         position: 'relative',
         overflow: 'hidden',
       }}>
-        {/* Subtle pattern overlay */}
+        {/* Subtle ambient orbs */}
         <div style={{
           position: 'absolute', inset: 0,
-          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.04) 0%, transparent 50%), radial-gradient(circle at 80% 50%, rgba(184,138,62,0.06) 0%, transparent 50%)',
+          backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(79,195,247,0.05) 0%, transparent 55%), radial-gradient(circle at 80% 50%, rgba(184,138,62,0.04) 0%, transparent 55%)',
           pointerEvents: 'none',
         }} />
         <div className="container-narrow text-center" style={{ position: 'relative', zIndex: 1 }}>
-          <div className="eyebrow" style={{ color: 'rgba(255,255,255,0.6)', marginBottom: 24 }}>Our mission</div>
-          {/* Inset quote box */}
-          <div style={{
-            background: 'rgba(255,255,255,0.06)',
-            backdropFilter: 'blur(10px)',
-            borderRadius: 20,
-            padding: 'clamp(40px, 6vw, 64px)',
-            border: '1px solid rgba(255,255,255,0.12)',
-            boxShadow: '0 20px 60px rgba(0,0,0,0.2)',
-          }}>
+          {/* eyebrow on light bg — uses var(--primary) */}
+          <div className="eyebrow" style={{ margin: '0 auto 24px' }}>Our mission</div>
+          {/* Inset quote box — TiltCard interactive */}
+          <TiltCard
+            tiltLimit={12}
+            scale={1.03}
+            perspective={1100}
+            effect="evade"
+            spotlight={true}
+            style={{
+              background: 'var(--surface)',
+              backdropFilter: 'blur(24px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(24px) saturate(180%)',
+              borderRadius: 24,
+              padding: 'clamp(40px, 6vw, 64px)',
+              border: '1px solid var(--line)',
+              boxShadow: 'var(--neu-shadow)',
+            }}
+          >
             <p style={{
               fontFamily: 'var(--serif)',
               fontSize: 'clamp(1.5rem, 2.8vw, 2.1rem)',
               lineHeight: 1.4,
               fontWeight: 350,
+              color: 'var(--ink)',
+              position: 'relative', zIndex: 20,
             }}>
-              "When a death goes unexplained, families are too often left alone with the silence. We exist to stand with them — and to push, gently and persistently, until the questions are answered."
+              &ldquo;When a death goes unexplained, families are too often left alone with the silence. We exist to stand with them &mdash; and to push, gently and persistently, until the questions are answered.&rdquo;
             </p>
             <div style={{
               marginTop: 32,
               fontSize: '0.82rem',
               letterSpacing: '0.14em',
               textTransform: 'uppercase',
-              opacity: 0.6,
+              color: 'var(--ink-muted)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 12,
+              position: 'relative', zIndex: 20,
             }}>
-              <div style={{ width: 30, height: 1, background: 'rgba(255,255,255,0.4)' }} />
+              <div style={{ width: 30, height: 1, background: 'var(--line)' }} />
               The Katie Trust
-              <div style={{ width: 30, height: 1, background: 'rgba(255,255,255,0.4)' }} />
+              <div style={{ width: 30, height: 1, background: 'var(--line)' }} />
             </div>
-          </div>
+          </TiltCard>
         </div>
       </section>
 
       {/* ——— IMPACT STATS ——— */}
-      <section className="section">
+      <section className="section" style={{
+        background: 'var(--bg)',
+        position: 'relative',
+      }}>
+        {/* Subtle frosted overlay behind stat cards */}
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          backgroundImage: 'radial-gradient(ellipse at 60% 50%, rgba(0,153,204,0.05) 0%, transparent 65%)',
+        }} />
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.2fr', gap: 80, alignItems: 'center' }} data-two-col>
             <div>
@@ -509,7 +785,7 @@ function HomePageV2() {
                 <span className="iconify" data-icon="mdi:arrow-right" style={{ fontSize: 16 }} />
               </Link>
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20 }} data-stat-grid>
               {stats.map((s, i) => (
                 <NeuStatCard key={i} {...s} delay={i * 0.08} />
               ))}
@@ -519,7 +795,25 @@ function HomePageV2() {
       </section>
 
       {/* ——— PROCESS STEPPER ——— */}
-      <section style={{ background: 'var(--bg-warm)', padding: '100px 0' }}>
+      <section style={{
+        background: 'var(--bg-warm)',
+        padding: '100px 0',
+        position: 'relative',
+        overflow: 'hidden',
+      }}>
+        {/* Subtle ambient orbs */}
+        <div style={{
+          position: 'absolute', top: -80, right: -80,
+          width: 400, height: 400, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(79,195,247,0.05) 0%, transparent 65%)',
+          pointerEvents: 'none',
+        }} />
+        <div style={{
+          position: 'absolute', bottom: -60, left: -60,
+          width: 300, height: 300, borderRadius: '50%',
+          background: 'radial-gradient(circle, rgba(0,96,144,0.05) 0%, transparent 65%)',
+          pointerEvents: 'none',
+        }} />
         <div className="container">
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 80, alignItems: 'start' }} data-two-col>
             <div>
@@ -535,7 +829,7 @@ function HomePageV2() {
             </div>
             <div>
               {steps.map((s, i) => (
-                <NeuProcessStep key={i} num={s.n} title={s.t} body={s.b} isLast={i === steps.length - 1} />
+                <NeuProcessStep key={i} num={s.n} title={s.t} body={s.b} isLast={i === steps.length - 1} isActive={i === 0} />
               ))}
             </div>
           </div>
@@ -543,13 +837,20 @@ function HomePageV2() {
       </section>
 
       {/* ——— TESTIMONIAL ——— */}
-      <section className="section">
+      <section className="section" style={{
+        background: 'linear-gradient(180deg, var(--bg-warm) 0%, var(--bg) 100%)',
+        position: 'relative',
+      }}>
+        <div style={{
+          position: 'absolute', inset: 0, pointerEvents: 'none',
+          backgroundImage: 'radial-gradient(ellipse at 30% 50%, rgba(0,153,204,0.04) 0%, transparent 60%), radial-gradient(ellipse at 70% 50%, rgba(79,195,247,0.04) 0%, transparent 60%)',
+        }} />
         <div className="container">
           <div style={{ textAlign: 'center', marginBottom: 56 }}>
             <div className="eyebrow">Voices from families</div>
             <h2>What families have said.</h2>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }} data-three-col>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }} data-three-col data-testimonial-grid>
             {[
               {
                 quote: 'They listened when no one else would. For the first time in two years, I felt that someone had heard us.',
@@ -577,53 +878,45 @@ function HomePageV2() {
       <section className="section" style={{ paddingTop: 0 }}>
         <div className="container">
           <div style={{
-            background: 'linear-gradient(135deg, #1e2a35 0%, #2a3a4a 100%)',
+            background: 'rgba(14,24,36,0.75)',
+            backdropFilter: 'blur(24px) saturate(180%)',
+            WebkitBackdropFilter: 'blur(24px) saturate(180%)',
             color: 'white',
             padding: 'clamp(48px, 7vw, 88px)',
-            borderRadius: 24,
+            borderRadius: 28,
             display: 'grid',
             gridTemplateColumns: '1.4fr 1fr',
             gap: 64,
             alignItems: 'center',
-            boxShadow: '0 24px 80px rgba(0,0,0,0.2)',
+            boxShadow: '0 32px 100px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12)',
+            border: '1px solid rgba(255,255,255,0.12)',
             position: 'relative',
             overflow: 'hidden',
           }} data-cta-grid>
-            {/* Glow orbs */}
+            {/* Subtle blue glow only — no gold */}
             <div style={{
               position: 'absolute', top: -60, right: -60,
               width: 300, height: 300, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(0,96,144,0.2) 0%, transparent 70%)',
-              pointerEvents: 'none',
-            }} />
-            <div style={{
-              position: 'absolute', bottom: -40, left: -40,
-              width: 200, height: 200, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(184,138,62,0.1) 0%, transparent 70%)',
+              background: 'radial-gradient(circle, rgba(0,96,144,0.18) 0%, transparent 70%)',
               pointerEvents: 'none',
             }} />
             <div style={{ position: 'relative', zIndex: 1 }}>
-              <div className="eyebrow" style={{ color: '#ffd88a' }}>Support our work</div>
+              <div className="eyebrow">Support our work</div>
               <h2 style={{ color: 'white', marginBottom: 20 }}>Help us reach the next family.</h2>
               <p style={{ color: '#a8b8c4', fontSize: '1.05rem', maxWidth: 520, lineHeight: 1.7 }}>
                 Every review costs time, expertise, and care. The Trust is funded entirely by donations from people who believe families deserve answers.
               </p>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 14, position: 'relative', zIndex: 1 }}>
-              <Link to="donate" className="btn btn-accent btn-lg" style={{ justifyContent: 'center' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12, position: 'relative', zIndex: 1 }}>
+              <Link to="donate" className="donate-link-row primary">
                 <span className="iconify" data-icon="mdi:credit-card-outline" style={{ fontSize: 18 }} />
                 Donate via Stripe
               </Link>
-              <a href="#" className="btn btn-ghost btn-lg" style={{
-                borderColor: 'rgba(255,255,255,0.15)',
-                color: 'white',
-                justifyContent: 'center',
-                background: 'rgba(255,255,255,0.05)',
-              }}>
+              <a href="#" className="donate-link-row secondary">
                 <span className="iconify" data-icon="mdi:hand-heart-outline" style={{ fontSize: 18 }} />
                 Donate via GoFundMe
               </a>
-              <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)', textAlign: 'center', marginTop: 4 }}>
+              <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.35)', textAlign: 'center', marginTop: 4 }}>
                 Secure · Trusted · 100% to The Trust
               </p>
             </div>
@@ -632,9 +925,13 @@ function HomePageV2() {
       </section>
 
       <style>{`
-        @media (max-width: 960px) {
-          [data-hero-grid], [data-two-col], [data-cta-grid] { grid-template-columns: 1fr !important; gap: 48px !important; }
-          [data-three-col] { grid-template-columns: 1fr !important; }
+        /* Donate CTA block — collapses to single column on tablet */
+        @media (max-width: 860px) {
+          [data-cta-grid] { grid-template-columns: 1fr !important; gap: 36px !important; }
+        }
+        /* Hero h1 — tighten min-height on cards for mobile */
+        @media (max-width: 580px) {
+          .neu-card h3 { min-height: auto !important; }
         }
       `}</style>
     </React.Fragment>

@@ -179,15 +179,24 @@ function Footer() {
 }
 
 function CookieBanner() {
-  const [show, setShow] = useState(true);
+  const [show, setShow] = useState(() => {
+    try { return !localStorage.getItem('kt_cookies_accepted'); }
+    catch { return true; }
+  });
+
+  const dismiss = (choice) => {
+    try { localStorage.setItem('kt_cookies_accepted', choice); } catch {}
+    setShow(false);
+  };
+
   if (!show) return null;
   return (
     <div className="cookie-banner" role="dialog" aria-label="Cookie preferences">
       <p>We use essential cookies to make this site work, and optional analytics cookies to understand how it's used. You can manage your preferences at any time.</p>
       <div className="actions">
-        <button className="btn btn-ghost btn-sm" onClick={() => setShow(false)}>Reject</button>
-        <button className="btn btn-ghost btn-sm" onClick={() => setShow(false)}>Manage</button>
-        <button className="btn btn-primary btn-sm" onClick={() => setShow(false)}>Accept</button>
+        <button className="btn btn-ghost btn-sm" onClick={() => dismiss('rejected')}>Reject</button>
+        <button className="btn btn-ghost btn-sm" onClick={() => dismiss('managed')}>Manage</button>
+        <button className="btn btn-primary btn-sm" onClick={() => dismiss('accepted')}>Accept</button>
       </div>
     </div>
   );

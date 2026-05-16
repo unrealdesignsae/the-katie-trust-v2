@@ -1,14 +1,202 @@
-// Pages: Team, Donate, Resources — Full Neuromorphic v2 UI
+// Pages: Team, Donate, Resources — Full Neuromorphic v3 UI
+
+/* ── Inline SVG social icons ── */
+function IconLinkedIn() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+      <rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/>
+    </svg>
+  );
+}
+function IconTwitter() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.26 5.632zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+    </svg>
+  );
+}
+function IconInstagram() {
+  return (
+    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+    </svg>
+  );
+}
+
+/* ── Photo card ── */
+function TeamPhotoCard({ member, w, h, hoveredId, onHover }) {
+  const isActive = hoveredId === member.id;
+  const isDimmed = hoveredId !== null && !isActive;
+  return (
+    <div
+      onMouseEnter={() => onHover(member.id)}
+      onMouseLeave={() => onHover(null)}
+      style={{
+        width: w, height: h, borderRadius: 14, overflow: 'hidden', flexShrink: 0,
+        cursor: 'pointer', transition: 'opacity 0.4s',
+        opacity: isDimmed ? 0.45 : 1,
+      }}
+    >
+      <img
+        src={member.image} alt={member.name}
+        style={{
+          width: '100%', height: '100%', objectFit: 'cover', display: 'block',
+          transition: 'filter 0.5s',
+          filter: isActive ? 'grayscale(0) brightness(1.05)' : 'grayscale(1) brightness(0.72)',
+        }}
+      />
+    </div>
+  );
+}
+
+/* ── Member name row ── */
+function TeamMemberRow({ member, hoveredId, onHover }) {
+  const isActive = hoveredId === member.id;
+  const isDimmed = hoveredId !== null && !isActive;
+  const hasSocial = member.social && Object.keys(member.social).length > 0;
+
+  const socialIcons = {
+    linkedin: <IconLinkedIn />,
+    twitter:  <IconTwitter />,
+    instagram: <IconInstagram />,
+  };
+
+  return (
+    <div
+      onMouseEnter={() => onHover(member.id)}
+      onMouseLeave={() => onHover(null)}
+      style={{ cursor: 'pointer', transition: 'opacity 0.3s', opacity: isDimmed ? 0.35 : 1 }}
+    >
+      {/* Name row */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        {/* Indicator pill */}
+        <div style={{
+          height: 12, borderRadius: 6, flexShrink: 0,
+          background: 'var(--ink)',
+          width: isActive ? 20 : 16,
+          opacity: isActive ? 1 : 0.25,
+          transition: 'width 0.3s, opacity 0.3s',
+        }} />
+        <span style={{
+          fontFamily: 'var(--sans)', fontSize: '1.2rem', fontWeight: 600,
+          color: isActive ? 'var(--ink)' : 'var(--ink-soft)',
+          letterSpacing: '-0.01em', transition: 'color 0.3s',
+          lineHeight: 1,
+        }}>
+          {member.name}
+        </span>
+        {/* Social icons — slide in on hover */}
+        {hasSocial && (
+          <div style={{
+            display: 'flex', alignItems: 'center', gap: 4, marginLeft: 2,
+            opacity: isActive ? 1 : 0,
+            transform: isActive ? 'translateX(0)' : 'translateX(-8px)',
+            transition: 'opacity 0.2s, transform 0.2s',
+            pointerEvents: isActive ? 'auto' : 'none',
+          }}>
+            {Object.entries(member.social).map(([platform, href]) => (
+              <a
+                key={platform}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                title={platform}
+                style={{
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  padding: 5, borderRadius: 6,
+                  color: 'var(--ink-muted)',
+                  background: 'var(--surface)',
+                  transition: 'color 0.15s, background 0.15s',
+                  textDecoration: 'none',
+                }}
+                onMouseEnter={(e) => { e.currentTarget.style.color = 'var(--primary)'; e.currentTarget.style.background = 'var(--primary-soft)'; }}
+                onMouseLeave={(e) => { e.currentTarget.style.color = 'var(--ink-muted)'; e.currentTarget.style.background = 'var(--surface)'; }}
+              >
+                {socialIcons[platform] || null}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+      {/* Role */}
+      <p style={{
+        marginTop: 5, paddingLeft: 26,
+        fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.18em',
+        textTransform: 'uppercase', color: 'var(--ink-muted)', fontFamily: 'var(--sans)',
+      }}>
+        {member.role}
+      </p>
+    </div>
+  );
+}
+
+/* ── TeamShowcase ── */
+function TeamShowcase({ members }) {
+  const [hoveredId, setHoveredId] = React.useState(null);
+
+  const col1 = members.filter((_, i) => i % 3 === 0);
+  const col2 = members.filter((_, i) => i % 3 === 1);
+  const col3 = members.filter((_, i) => i % 3 === 2);
+
+  /* Heights for each photo column — width is always 100% of its grid cell */
+  const colDefs = [
+    { items: col1, mt: 0,  h: 218 },
+    { items: col2, mt: 60, h: 242 },
+    { items: col3, mt: 28, h: 228 },
+  ];
+
+  return (
+    /* Outer grid: 3 photo cols + 1 name col, all equal-ish fr — fills container */
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: '1fr 1.08fr 1.04fr 1.1fr',
+      gap: 12,
+      alignItems: 'start',
+      width: '100%',
+    }}>
+      {/* Three photo columns */}
+      {colDefs.map((col, ci) => (
+        <div key={ci} style={{
+          display: 'flex', flexDirection: 'column',
+          gap: 10, marginTop: col.mt,
+        }}>
+          {col.items.map((m) => (
+            <TeamPhotoCard
+              key={m.id} member={m}
+              w="100%" h={col.h}
+              hoveredId={hoveredId} onHover={setHoveredId}
+            />
+          ))}
+        </div>
+      ))}
+
+      {/* Name list — fourth column */}
+      <div style={{
+        display: 'flex', flexDirection: 'column',
+        gap: 22, paddingTop: 12, paddingLeft: 20,
+      }}>
+        {members.map((m) => (
+          <TeamMemberRow key={m.id} member={m} hoveredId={hoveredId} onHover={setHoveredId} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
 function TeamPage() {
   const team = [
-    { name: 'Reece Anderson', role: 'Founder & Director', bio: 'Established the Trust following Katie\'s death. Oversees case work and external relations.', icon: 'mdi:account-star-outline' },
-    { name: 'Dr. Helen Mawer', role: 'Clinical Adviser', bio: 'Consultant in emergency medicine. Reviews medical records and clinical pathways.', icon: 'mdi:stethoscope' },
-    { name: 'James O\'Connell', role: 'Legal Adviser', bio: 'Solicitor with 20 years\' experience in inquests, public law, and family advocacy.', icon: 'mdi:scale-balance' },
-    { name: 'Sarah Whyte', role: 'Family Liaison Lead', bio: 'A trauma-informed practitioner who is the first point of contact for most families.', icon: 'mdi:heart-outline' },
-    { name: 'Dr. Aisling Brennan', role: 'Research Lead', bio: 'Public-health researcher who leads our policy submissions and evidence work.', icon: 'mdi:microscope' },
-    { name: 'Mark Henderson', role: 'Trustee', bio: 'Former coroner\'s officer. Provides procedural guidance and institutional knowledge.', icon: 'mdi:gavel' },
+    { id: '1', name: 'Reece Anderson',   role: 'Founder & Director',    image: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&h=450&fit=crop', social: { linkedin: '#', twitter: '#' } },
+    { id: '2', name: 'Dr. Helen Mawer',  role: 'Clinical Adviser',      image: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=400&h=450&fit=crop', social: { linkedin: '#' } },
+    { id: '3', name: "James O'Connell",  role: 'Legal Adviser',         image: 'https://images.unsplash.com/photo-1566492031773-4f4e44671857?w=400&h=450&fit=crop', social: { linkedin: '#', twitter: '#' } },
+    { id: '4', name: 'Sarah Whyte',      role: 'Family Liaison Lead',   image: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&h=450&fit=crop', social: { linkedin: '#', instagram: '#' } },
+    { id: '5', name: 'Dr. Aisling Brennan', role: 'Research Lead',      image: 'https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&h=450&fit=crop', social: { twitter: '#', linkedin: '#' } },
+    { id: '6', name: 'Mark Henderson',   role: 'Trustee',               image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=450&fit=crop', social: { linkedin: '#' } },
   ];
+
   return (
     <React.Fragment>
       <PageHero
@@ -19,50 +207,18 @@ function TeamPage() {
 
       <section className="section">
         <div className="container">
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }} data-team-grid>
-            {team.map((m, i) => (
-              <div key={i} className="neu-card anim-fade-up" style={{ animationDelay: `${i * 0.08}s` }}>
-                {/* Icon avatar */}
-                <div style={{
-                  width: 72, height: 72, borderRadius: '50%',
-                  background: 'linear-gradient(135deg, var(--primary-soft), #d0e4f0)',
-                  boxShadow: 'var(--neu-shadow)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: 20,
-                  border: '1px solid rgba(255,255,255,0.7)',
-                }}>
-                  <span className="iconify" data-icon={m.icon} style={{ fontSize: 32, color: 'var(--primary)' }} />
-                </div>
-                <h3 style={{ marginBottom: 4, fontSize: '1.1rem' }}>{m.name}</h3>
-                <div style={{
-                  fontSize: '0.78rem', textTransform: 'uppercase', letterSpacing: '0.12em',
-                  color: 'var(--primary)', marginBottom: 14, fontWeight: 600,
-                }}>
-                  {m.role}
-                </div>
-                <div style={{ height: 1, background: 'var(--line-soft)', margin: '0 0 16px' }} />
-                <p style={{ color: 'var(--ink-soft)', fontSize: '0.94rem', lineHeight: 1.65 }}>{m.bio}</p>
-              </div>
-            ))}
-          </div>
+          <TeamShowcase members={team} />
 
           {/* Advisory network */}
           <div style={{
-            marginTop: 64,
+            marginTop: 80,
             background: 'linear-gradient(135deg, #004a70 0%, #006090 100%)',
-            color: 'white',
-            borderRadius: 20,
+            color: 'white', borderRadius: 20,
             padding: 'clamp(40px, 6vw, 64px)',
             textAlign: 'center',
-            boxShadow: '0 24px 80px rgba(0,0,0,0.18)',
+            boxShadow: '0 24px 80px rgba(0,0,0,0.22)',
             position: 'relative', overflow: 'hidden',
           }}>
-            <div style={{
-              position: 'absolute', top: -80, right: -80,
-              width: 300, height: 300, borderRadius: '50%',
-              background: 'radial-gradient(circle, rgba(184,138,62,0.12) 0%, transparent 70%)',
-              pointerEvents: 'none',
-            }} />
             <div className="eyebrow" style={{ color: 'rgba(255,255,255,0.65)', marginBottom: 16 }}>Advisory network</div>
             <h3 style={{ color: 'white', marginBottom: 12 }}>An advisory network of clinicians, lawyers and academics.</h3>
             <p style={{ color: 'rgba(255,255,255,0.75)', maxWidth: 600, margin: '0 auto 28px', lineHeight: 1.7 }}>
@@ -72,14 +228,11 @@ function TeamPage() {
           </div>
         </div>
       </section>
-
-      <style>{`
-        @media (max-width: 900px) { [data-team-grid] { grid-template-columns: 1fr 1fr !important; } }
-        @media (max-width: 560px) { [data-team-grid] { grid-template-columns: 1fr !important; } }
-      `}</style>
     </React.Fragment>
   );
 }
+
+
 
 function DonatePage() {
   const [amount, setAmount] = React.useState(50);
@@ -185,16 +338,11 @@ function DonatePage() {
 
               {/* Membership */}
               <div className="neu-card" style={{
-                background: 'linear-gradient(135deg, var(--accent-soft), #f0e4c8)',
-                border: '1px solid rgba(184,138,62,0.2)',
+                background: 'linear-gradient(135deg, var(--accent-soft), var(--primary-soft))',
+                border: '1px solid rgba(56, 182, 232, 0.2)',
               }}>
-                <div style={{
-                  width: 44, height: 44, borderRadius: 12,
-                  background: 'white', boxShadow: 'var(--neu-shadow-sm)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: 16,
-                }}>
-                  <span className="iconify" data-icon="mdi:star-circle-outline" style={{ fontSize: 22, color: 'var(--accent)' }} />
+                <div className="icon-box icon-box--accent" style={{ marginBottom: 16 }}>
+                  <span className="iconify" data-icon="mdi:star-circle-outline" />
                 </div>
                 <h4 style={{ marginBottom: 10 }}>Become a Katie Trust Member</h4>
                 <p style={{ fontSize: '0.92rem', color: 'var(--ink-soft)', marginBottom: 18, lineHeight: 1.65 }}>
@@ -302,12 +450,8 @@ function ResourcesPage() {
                       onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-2px)'}
                       onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}
                     >
-                      <div style={{
-                        flexShrink: 0, width: 40, height: 40, borderRadius: 10,
-                        background: 'var(--primary-soft)', boxShadow: 'var(--neu-shadow-sm)',
-                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                      }}>
-                        <span className="iconify" data-icon={d.icon} style={{ fontSize: 20, color: 'var(--primary)' }} />
+                      <div className="icon-box">
+                        <span className="iconify" data-icon={d.icon} />
                       </div>
                       <div style={{ flex: 1 }}>
                         <div style={{ fontWeight: 600, color: 'var(--ink)', marginBottom: 2, fontSize: '0.95rem' }}>{d.t}</div>
@@ -321,13 +465,8 @@ function ResourcesPage() {
 
               {/* Need to talk */}
               <div className="neu-card" style={{ background: 'linear-gradient(135deg, var(--primary-soft), var(--bg))' }}>
-                <div style={{
-                  width: 40, height: 40, borderRadius: 10,
-                  background: 'var(--bg)', boxShadow: 'var(--neu-shadow-sm)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  marginBottom: 14,
-                }}>
-                  <span className="iconify" data-icon="mdi:chat-outline" style={{ fontSize: 20, color: 'var(--primary)' }} />
+                <div className="icon-box" style={{ marginBottom: 14 }}>
+                  <span className="iconify" data-icon="mdi:chat-outline" />
                 </div>
                 <h4 style={{ marginBottom: 8 }}>Need to talk?</h4>
                 <p style={{ fontSize: '0.92rem', color: 'var(--ink-soft)', marginBottom: 18, lineHeight: 1.65 }}>

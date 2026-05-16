@@ -1,10 +1,10 @@
 /* Katie Trust v2 — Neuromorphic Design System */
 :root {
-  --primary: #006090;
-  --primary-dark: #004a70;
+  --primary: #0099cc;
+  --primary-dark: #007aaa;
   --primary-soft: #e8f0f5;
-  --accent: #b88a3e;
-  --accent-soft: #f5ecd9;
+  --accent: #1a9fd4;
+  --accent-soft: #d6f0fb;
   --bg: #eef0f4;
   --bg-warm: #e8eaee;
   --surface: #e4e7ed;
@@ -43,7 +43,11 @@
   --line:        #2a3340;
   --line-soft:   #232d38;
   --primary-soft:#0a2030;
-  --accent-soft: #2a1e10;
+  --accent-soft: #0a2030;
+
+  /* Vivid blue for dark mode — max legibility on dark backgrounds */
+  --primary:      #52d0ff;
+  --primary-dark: #2abfee;
 
   /* Dark neuromorphic shadows — pure dark, no white halo */
   --neu-shadow:        4px 6px 18px rgba(0,0,0,0.45), 0 1px 4px rgba(0,0,0,0.22);
@@ -89,10 +93,11 @@
 }
 [data-theme="dark"] .btn-ghost:hover { color: var(--primary); }
 
-/* Dark pill */
+/* Dark pill — matches light-mode label style */
 [data-theme="dark"] .neu-pill {
-  background: var(--bg);
-  border-color: rgba(255,255,255,0.05);
+  background: rgba(82,208,255,0.08);
+  border-color: rgba(82,208,255,0.22);
+  color: var(--primary);
 }
 
 /* Dark img placeholder */
@@ -223,14 +228,73 @@
 }
 .theme-toggle-btn svg { display: block; pointer-events: none; }
 
-/* ── Cookie Banner ── */
+/* ═══════════════════════════════════════════
+   UNIFIED ICON SYSTEM — flat, clean, theme-aware
+   Simple colored icon, no 3D sphere, no animations
+   ═══════════════════════════════════════════ */
+.icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: rgba(0, 153, 204, 0.10);
+  border: 1px solid rgba(0, 153, 204, 0.18);
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+
+/* Icon color matches primary brand */
+.icon-box .iconify,
+.icon-box > [class*="iconify"] {
+  color: var(--primary) !important;
+  font-size: 22px !important;
+  display: block;
+  pointer-events: none;
+}
+
+/* Sizes */
+.icon-box--sm  { width: 36px; height: 36px; border-radius: 10px; }
+.icon-box--sm  .iconify { font-size: 17px !important; }
+.icon-box--lg  { width: 60px; height: 60px; border-radius: 16px; }
+.icon-box--lg  .iconify { font-size: 28px !important; }
+.icon-box--xl  { width: 76px; height: 76px; border-radius: 20px; }
+.icon-box--xl  .iconify { font-size: 34px !important; }
+
+/* Simple hover on icon — just a tint shift */
+.icon-box:hover,
+.neu-card:hover .icon-box,
+.neu-stat:hover .icon-box {
+  background: rgba(0, 153, 204, 0.18);
+  border-color: rgba(0, 153, 204, 0.35);
+}
+
+/* Dark mode — brighter tint so it reads on dark surfaces */
+[data-theme="dark"] .icon-box {
+  background: rgba(79, 195, 247, 0.12);
+  border-color: rgba(79, 195, 247, 0.22);
+}
+[data-theme="dark"] .icon-box .iconify,
+[data-theme="dark"] .icon-box > [class*="iconify"] {
+  color: #81d4fa !important;
+}
+[data-theme="dark"] .icon-box:hover,
+[data-theme="dark"] .neu-card:hover .icon-box,
+[data-theme="dark"] .neu-stat:hover .icon-box {
+  background: rgba(79, 195, 247, 0.20);
+  border-color: rgba(79, 195, 247, 0.38);
+}
+
+/* ── Cookie Banner (canonical) ── */
 .cookie-banner {
   position: fixed;
   bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 24px;
+  right: 24px;
+  margin: 0 auto;
+  max-width: 680px;
   z-index: 9999;
-  width: min(640px, calc(100vw - 32px));
   background: var(--bg);
   border-radius: var(--radius);
   padding: 20px 24px;
@@ -238,25 +302,27 @@
   border: 1px solid rgba(255,255,255,0.08);
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 18px;
   flex-wrap: wrap;
+  justify-content: space-between;
+  box-sizing: border-box;
 }
 .cookie-banner p {
-  flex: 1 1 280px;
+  flex: 1 1 200px;
   font-size: 0.82rem;
   color: var(--ink-soft);
   line-height: 1.55;
   margin: 0;
+  min-width: 0;
 }
 .cookie-banner .actions {
   display: flex;
   gap: 8px;
   flex-shrink: 0;
   align-items: center;
+  flex-wrap: wrap;
 }
-/* Dark cookie banner */
 [data-theme="dark"] .cookie-banner {
-  background: var(--bg);
   border-color: rgba(255,255,255,0.05);
 }
 
@@ -318,7 +384,65 @@ p { text-wrap: pretty; }
 .container { max-width: var(--container); margin: 0 auto; padding: 0 32px; }
 .container-narrow { max-width: 760px; margin: 0 auto; padding: 0 32px; }
 
-/* ——— Neuromorphic Buttons ——— */
+/* ═══════════════════════════════════════════════════════
+   AQUA DEPTH GLASS SYSTEM — Katie Trust v3
+   Effects: Frosted Surface cards · Depth-Shift orbs
+            Aqua pill tags · Glowing stepper circles
+   ═══════════════════════════════════════════════════════ */
+
+/* CSS custom properties for glass layers */
+:root {
+  --glass-bg:        rgba(255, 255, 255, 0.10);
+  --glass-bg-heavy:  rgba(255, 255, 255, 0.18);
+  --glass-bg-light:  rgba(255, 255, 255, 0.06);
+  --glass-border:    rgba(255, 255, 255, 0.22);
+  --glass-border-soft: rgba(255, 255, 255, 0.12);
+  --glass-border-teal: rgba(79, 195, 247, 0.38);
+  --glass-blur:      blur(18px) saturate(190%);
+  --glass-blur-sm:   blur(12px) saturate(170%);
+  --glass-blur-lg:   blur(28px) saturate(210%);
+  /* Diagonal shimmer — top-left bright, fades to transparent */
+  --glass-shine:     linear-gradient(135deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.08) 40%, transparent 70%);
+  --glass-shadow:    0 8px 32px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255,255,255,0.28);
+  --glass-shadow-lg: 0 20px 64px rgba(0, 0, 0, 0.32), inset 0 1px 0 rgba(255,255,255,0.34);
+  /* Aqua glow — used on teal-accented surfaces */
+  --glass-glow-teal: 0 0 0 1px rgba(79,195,247,0.30), 0 8px 40px rgba(79,195,247,0.18);
+  /* Depth sphere gradient — for icon orbs / stat badges */
+  --depth-orb:       radial-gradient(circle at 35% 30%, rgba(129,212,250,0.85) 0%, rgba(79,163,220,0.70) 40%, rgba(30,100,180,0.50) 100%);
+}
+[data-theme="dark"] {
+  --glass-bg:        rgba(255, 255, 255, 0.055);
+  --glass-bg-heavy:  rgba(255, 255, 255, 0.095);
+  --glass-bg-light:  rgba(255, 255, 255, 0.025);
+  --glass-border:    rgba(255, 255, 255, 0.12);
+  --glass-border-soft: rgba(255, 255, 255, 0.06);
+  --glass-border-teal: rgba(79, 195, 247, 0.28);
+  --glass-shine:     linear-gradient(135deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.02) 40%, transparent 70%);
+  --glass-shadow:    0 8px 32px rgba(0, 0, 0, 0.60), inset 0 1px 0 rgba(255,255,255,0.09);
+  --glass-shadow-lg: 0 20px 64px rgba(0, 0, 0, 0.70), inset 0 1px 0 rgba(255,255,255,0.11);
+  --glass-glow-teal: 0 0 0 1px rgba(79,195,247,0.22), 0 8px 40px rgba(79,195,247,0.12);
+  --depth-orb:       radial-gradient(circle at 35% 30%, rgba(129,212,250,0.75) 0%, rgba(79,163,220,0.55) 40%, rgba(20,80,150,0.45) 100%);
+}
+
+/* ——— Keyframes ——— */
+@keyframes glass-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+@keyframes aqua-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79,195,247,0.45), var(--glass-shadow); }
+  50%       { box-shadow: 0 0 0 6px rgba(79,195,247,0), var(--glass-shadow); }
+}
+@keyframes depth-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-3px); }
+}
+@keyframes stepper-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(79,195,247,0.5), 0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
+  50%       { box-shadow: 0 0 0 8px rgba(79,195,247,0), 0 4px 20px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2); }
+}
+
+/* ——— Frosted Glass Buttons ——— */
 .btn {
   display: inline-flex;
   align-items: center;
@@ -329,47 +453,71 @@ p { text-wrap: pretty; }
   font-weight: 600;
   letter-spacing: 0.02em;
   border-radius: var(--radius-sm);
-  transition: all .2s ease;
+  transition: all .25s ease;
   cursor: pointer;
-  border: none;
+  border: 1px solid var(--glass-border);
   white-space: nowrap;
   position: relative;
+  overflow: hidden;
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
 }
+
+/* Shimmer pseudo-element on all buttons */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass-shine);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .25s ease;
+}
+.btn:hover::before { opacity: 1; }
+
 .btn-primary {
-  background: linear-gradient(135deg, #006090, #004a70);
+  background: linear-gradient(135deg, rgba(0,96,144,0.88), rgba(0,74,112,0.82));
   color: white;
-  box-shadow: 4px 6px 14px rgba(0,0,0,0.28);
+  border-color: rgba(79,195,247,0.30);
+  box-shadow: 0 4px 20px rgba(0,96,144,0.40), inset 0 1px 0 rgba(255,255,255,0.20);
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, #0072ab, #005580);
+  background: linear-gradient(135deg, rgba(0,114,171,0.92), rgba(0,85,128,0.86));
   color: white;
-  box-shadow: 6px 8px 18px rgba(0,0,0,0.32);
-  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(0,96,144,0.50), inset 0 1px 0 rgba(255,255,255,0.25);
+  transform: translateY(-2px);
 }
 .btn-primary:active {
-  box-shadow: inset 3px 3px 8px rgba(0,0,0,0.22);
+  box-shadow: inset 3px 3px 10px rgba(0,0,0,0.28);
   transform: translateY(0);
 }
+
 .btn-ghost {
-  background: var(--bg);
+  background: var(--glass-bg);
   color: var(--ink);
-  box-shadow: var(--neu-shadow-sm);
+  border-color: var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
 }
 .btn-ghost:hover {
   color: var(--primary);
-  box-shadow: var(--neu-shadow);
-  transform: translateY(-1px);
+  background: var(--glass-bg-heavy);
+  box-shadow: var(--glass-shadow-lg);
+  transform: translateY(-2px);
 }
+
 .btn-accent {
-  background: linear-gradient(135deg, #c89a4e, #a07530);
+  background: linear-gradient(135deg, rgba(0,153,204,0.85), rgba(0,122,170,0.80));
   color: white;
-  box-shadow: 4px 6px 14px rgba(0,0,0,0.26);
+  border-color: rgba(100,220,255,0.25);
+  box-shadow: 0 4px 20px rgba(0,153,204,0.38), inset 0 1px 0 rgba(255,255,255,0.22);
 }
 .btn-accent:hover {
-  background: linear-gradient(135deg, #d4a85a, #b08040);
+  background: linear-gradient(135deg, rgba(26,159,212,0.90), rgba(0,153,204,0.85));
   color: white;
-  box-shadow: 6px 8px 18px rgba(0,0,0,0.30);
-  transform: translateY(-1px);
+  box-shadow: 0 8px 32px rgba(0,153,204,0.48), inset 0 1px 0 rgba(255,255,255,0.28);
+  transform: translateY(-2px);
 }
 .btn-sm { padding: 9px 18px; font-size: 0.85rem; }
 .btn-lg { padding: 18px 36px; font-size: 1rem; }
@@ -384,25 +532,27 @@ p { text-wrap: pretty; }
   letter-spacing: 0.01em;
 }
 .donate-strip a {
-  color: #ffd88a;
+  color: #81d4fa;
   text-decoration: underline;
-  text-decoration-color: rgba(255,216,138,0.5);
+  text-decoration-color: rgba(129,212,250,0.4);
   text-underline-offset: 3px;
   font-weight: 600;
   margin-left: 8px;
 }
-.donate-strip a:hover { text-decoration-color: #ffd88a; color: white; }
+.donate-strip a:hover { text-decoration-color: #81d4fa; color: white; }
 
 /* ——— Header ——— */
 .site-header {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
-  background: rgba(10, 52, 75, 0.93);
-  backdrop-filter: saturate(160%) blur(18px);
-  -webkit-backdrop-filter: saturate(160%) blur(18px);
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-  box-shadow: 0 4px 32px rgba(0,0,0,0.28);
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background: rgba(6, 18, 30, 0.65);
+  backdrop-filter: blur(28px) saturate(200%);
+  -webkit-backdrop-filter: blur(28px) saturate(200%);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 4px 32px rgba(0,0,0,0.30), inset 0 1px 0 rgba(255,255,255,0.10);
 }
 .header-inner {
   display: flex;
@@ -410,7 +560,7 @@ p { text-wrap: pretty; }
   justify-content: space-between;
   gap: 24px;
   height: 84px;
-  padding: 0 24px;
+  padding: 0 40px;
   max-width: 1400px;
   margin: 0 auto;
 }
@@ -437,18 +587,21 @@ p { text-wrap: pretty; }
   max-width: 110px;
 }
 @media (max-width: 720px) { .brand-tag { display: none; } }
-/* Neuromorphic pill nav track */
+/* Frosted glass pill nav track */
 .nav {
   display: flex;
   align-items: center;
   gap: 4px;
   flex-wrap: nowrap;
-  background: rgba(0, 20, 36, 0.45);
+  background: rgba(0, 20, 36, 0.38);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   border-radius: 100px;
   padding: 5px;
+  border: 1px solid rgba(255,255,255,0.10);
   box-shadow:
-    inset 3px 3px 8px rgba(0, 0, 0, 0.45),
-    inset -2px -2px 5px rgba(255, 255, 255, 0.05);
+    inset 3px 3px 8px rgba(0, 0, 0, 0.35),
+    0 4px 16px rgba(0,0,0,0.20);
 }
 .nav a {
   padding: 8px 14px;
@@ -466,14 +619,14 @@ p { text-wrap: pretty; }
 .nav a.active {
   color: #fff;
   font-weight: 700;
-  background: linear-gradient(135deg, #006090, #004a70);
+  background: linear-gradient(135deg, #0099cc, #007aaa);
   box-shadow:
     4px 4px 10px rgba(0, 0, 0, 0.45),
     -2px -2px 6px rgba(255, 255, 255, 0.06),
     0 0 0 1px rgba(255,255,255,0.08);
   transition: none;
 }
-.header-cta { display: flex; align-items: center; gap: 10px; }
+.header-cta { display: flex; align-items: center; gap: 10px; padding-right: 8px; }
 .menu-btn {
   display: none;
   padding: 8px;
@@ -483,6 +636,48 @@ p { text-wrap: pretty; }
   color: white;
 }
 @media (max-width: 1180px) { .header-cta .btn-ghost { display: none; } }
+
+/* Refer a case — always white in the dark header */
+.header-cta .btn-ghost {
+  color: white !important;
+}
+.header-cta .btn-ghost:hover {
+  color: white !important;
+}
+
+/* ——— Donate link rows (frosted panel style) ——— */
+.donate-link-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 20px;
+  border-radius: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+.donate-link-row:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+.donate-link-row.primary {
+  background: rgba(0,153,204,0.18);
+  border: 1px solid rgba(0,153,204,0.35);
+  color: var(--primary);
+}
+.donate-link-row.primary:hover {
+  background: rgba(0,153,204,0.28);
+}
+.donate-link-row.secondary {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.75);
+}
+.donate-link-row.secondary:hover {
+  background: rgba(255,255,255,0.10);
+  color: white;
+}
 @media (max-width: 1080px) { .nav { display: none; } .menu-btn { display: inline-flex; } }
 
 .mobile-nav {
@@ -504,77 +699,139 @@ p { text-wrap: pretty; }
   color: var(--ink);
 }
 
-/* ——— Neuromorphic Cards ——— */
+/* ——— Frosted Glass Cards ——— */
 .neu-card {
-  background: var(--bg);
-  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border-radius: 20px;
   padding: 36px;
-  box-shadow: var(--neu-shadow);
-  transition: all .25s ease;
-  border: 1px solid rgba(255,255,255,0.7);
+  border: 1px solid rgba(255, 255, 255, 0.70);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  position: relative;
+  overflow: hidden;
+}
+[data-theme="dark"] .neu-card {
+  background: rgba(30, 37, 48, 0.60);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.28), 0 1px 4px rgba(0,0,0,0.18);
 }
 .neu-card:hover {
-  box-shadow: var(--neu-shadow-hover);
   transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+  border-color: rgba(0, 153, 204, 0.30);
+}
+[data-theme="dark"] .neu-card:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,0.40), 0 2px 8px rgba(0,0,0,0.20);
+  border-color: rgba(79, 195, 247, 0.28);
 }
 .neu-card-inset {
   background: var(--bg);
-  border-radius: var(--radius);
+  border-radius: 16px;
   padding: 28px;
-  box-shadow: var(--neu-shadow-inset);
-  border: 1px solid rgba(255,255,255,0.4);
+  box-shadow: var(--neu-shadow-sm);
+  border: 1px solid var(--line-soft);
 }
 
-/* ——— Stat Badge ——— */
+/* ——— Stat Cards ——— */
 .neu-stat {
-  background: var(--bg);
-  border-radius: var(--radius);
-  padding: 28px 24px;
-  box-shadow: var(--neu-shadow);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border-radius: 20px;
+  padding: 32px 24px;
   text-align: center;
-  border: 1px solid rgba(255,255,255,0.7);
-  transition: all .25s;
+  border: 1px solid rgba(255, 255, 255, 0.70);
+  transition: transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06), 0 1px 4px rgba(0,0,0,0.04);
 }
-.neu-stat:hover { transform: translateY(-3px); box-shadow: var(--neu-shadow-hover); }
+[data-theme="dark"] .neu-stat {
+  background: rgba(30, 37, 48, 0.60);
+  border-color: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.28), 0 1px 4px rgba(0,0,0,0.18);
+}
+.neu-stat:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.10), 0 2px 8px rgba(0,0,0,0.06);
+  border-color: rgba(0, 153, 204, 0.28);
+}
+[data-theme="dark"] .neu-stat:hover {
+  box-shadow: 0 12px 40px rgba(0,0,0,0.40);
+  border-color: rgba(79, 195, 247, 0.28);
+}
 .neu-stat-num {
   font-family: var(--serif);
   font-size: clamp(2.4rem, 4vw, 3.2rem);
-  color: var(--primary);
+  background: linear-gradient(135deg, #0099cc 0%, #4fc3f7 50%, #0077aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   line-height: 1;
   margin-bottom: 8px;
   font-weight: 400;
 }
 .neu-stat-label { font-size: 0.88rem; color: var(--ink-soft); font-weight: 500; }
 
+/* ——— Depth Sphere duplicate removed — see canonical .icon-box above ——— */
 
 
-/* ——— Badge / Pill ——— */
+
+/* ——— Aqua Pill Badge — subtle label, not a button ——— */
 .neu-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 14px;
-  border-radius: 20px;
+  gap: 8px;
+  padding: 5px 14px;
+  border-radius: 100px;
   font-size: 0.78rem;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  background: var(--bg);
-  box-shadow: var(--neu-shadow-sm);
+  background: rgba(0,153,204,0.10);
+  border: 1px solid rgba(0,153,204,0.25);
   color: var(--primary);
-  border: 1px solid rgba(255,255,255,0.7);
+}
+/* No dot pseudo-element — pills are plain text labels now */
+.neu-pill::before { display: none; }
+
+/* ——— Aqua Eyebrow Pill (section labels) ——— */
+/* Default: readable on LIGHT backgrounds */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--sans);
+  font-size: 0.70rem;
+  text-transform: uppercase;
+  letter-spacing: 0.20em;
+  color: var(--primary);
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding: 5px 14px;
+  border-radius: 100px;
+  background: rgba(0, 153, 204, 0.10);
+  border: 1px solid rgba(0, 153, 204, 0.28);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 2px 10px rgba(0,153,204,0.10);
 }
 
-/* ——— Eyebrow ——— */
-.eyebrow {
-  display: inline-block;
-  font-family: var(--sans);
-  font-size: 0.72rem;
-  text-transform: uppercase;
-  letter-spacing: 0.24em;
-  color: var(--primary);
-  font-weight: 600;
-  margin-bottom: 20px;
+/* On DARK section backgrounds — use .eyebrow-dark class */
+.eyebrow-dark {
+  color: rgba(129, 212, 250, 0.90);
+  background: rgba(79,195,247,0.12);
+  border-color: rgba(79,195,247,0.35);
+  box-shadow: 0 2px 10px rgba(79,195,247,0.14);
+}
+
+/* Dark theme adjusts eyebrow to work on dark-bg surfaces */
+[data-theme="dark"] .eyebrow {
+  color: #81d4fa;
+  background: rgba(79,195,247,0.10);
+  border-color: rgba(79,195,247,0.28);
 }
 
 .section { padding: 100px 0; }
@@ -582,7 +839,7 @@ p { text-wrap: pretty; }
 
 /* ——— Page Hero ——— */
 .page-hero {
-  padding: 80px 0 64px;
+  padding: calc(84px + 64px) 0 64px; /* 84px = fixed nav height, 64px = visual breathing room */
   border-bottom: 1px solid var(--line);
   background: var(--bg-warm);
 }
@@ -644,7 +901,7 @@ p { text-wrap: pretty; }
 /* ——— Card (legacy compat) ——— */
 .card {
   background: var(--bg);
-  border: 1px solid rgba(255,255,255,0.7);
+  border: 1px solid var(--line);   /* was rgba(255,255,255,0.7) = invisible on light */
   border-radius: var(--radius);
   padding: 32px;
   box-shadow: var(--neu-shadow);
@@ -685,28 +942,7 @@ p { text-wrap: pretty; }
   box-shadow: var(--neu-shadow-inset), 0 0 0 3px rgba(0,96,144,0.15);
 }
 
-/* ——— Cookie Banner ——— */
-.cookie-banner {
-  position: fixed;
-  bottom: 24px;
-  left: 24px;
-  right: 24px;
-  max-width: 680px;
-  margin: 0 auto;
-  background: var(--bg);
-  border: 1px solid rgba(255,255,255,0.7);
-  border-radius: var(--radius);
-  padding: 24px 28px;
-  box-shadow: var(--neu-shadow-hover);
-  z-index: 90;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  align-items: center;
-  justify-content: space-between;
-}
-.cookie-banner p { font-size: 0.9rem; color: var(--ink-soft); flex: 1; min-width: 280px; }
-.cookie-banner .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+/* ——— Cookie Banner (duplicate removed — see canonical block above) ——— */
 
 /* ——— Footer ——— */
 .site-footer {
@@ -890,3 +1126,335 @@ button.neu-toggle-track {
   outline-offset: 3px;
 }
 
+/* ═══════════════════════════════════════════════════════
+   MOBILE RESPONSIVENESS — Katie Trust v2
+   Breakpoints: 1080px (tablet/nav), 768px (mobile), 480px (xs)
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Container ── */
+@media (max-width: 768px) {
+  .container,
+  .container-narrow {
+    padding: 0 20px;
+  }
+}
+
+/* ── Global section spacing ── */
+@media (max-width: 768px) {
+  .section        { padding: 64px 0; }
+  .section-tight  { padding: 44px 0; }
+}
+@media (max-width: 480px) {
+  .section        { padding: 48px 0; }
+  .section-tight  { padding: 32px 0; }
+}
+
+/* ── Hero — prevent 100vh from being too tall on mobile ── */
+@media (max-width: 768px) {
+  #hero-section {
+    height: 100svh !important;   /* safe-area aware */
+    min-height: 580px;
+  }
+}
+
+/* ── Header ── */
+@media (max-width: 1080px) {
+  .header-inner { height: 68px; padding: 0 18px; gap: 14px; }
+}
+@media (max-width: 480px) {
+  .header-inner { height: 60px; padding: 0 14px; gap: 10px; }
+  /* Hide secondary header CTA on tiny screens — hamburger handles nav */
+  .header-cta .btn-ghost,
+  .header-cta .btn-primary { display: none; }
+  /* Keep theme toggle + menu btn visible */
+  .header-cta { gap: 8px; }
+}
+
+/* ── Mobile nav overlay ── */
+@media (max-width: 1080px) {
+  .mobile-nav { top: 68px; }
+}
+@media (max-width: 480px) {
+  .mobile-nav { top: 60px; padding: 24px 20px; }
+  .mobile-nav a { padding: 16px 0; font-size: 1.25rem; }
+}
+
+/* ── Typography scaling ── */
+@media (max-width: 480px) {
+  h1 { font-size: clamp(1.9rem, 8vw, 2.8rem); }
+  h2 { font-size: clamp(1.5rem, 6vw, 2rem); }
+  h3 { font-size: clamp(1.15rem, 4vw, 1.35rem); }
+}
+
+/* ── Page hero ── */
+@media (max-width: 768px) {
+  .page-hero { padding: calc(84px + 32px) 0 40px; } /* nav + breathing room on mobile */
+  .page-hero h1 { max-width: 100%; }
+}
+
+/* ── Neu cards ── */
+@media (max-width: 768px) {
+  .neu-card        { padding: 24px; }
+  .neu-card-inset  { padding: 20px; }
+  .card            { padding: 22px; }
+}
+
+/* ── Footer ── */
+@media (max-width: 768px) {
+  .site-footer { margin-top: 72px; padding: 56px 0 24px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
+}
+
+/* ── Cookie banner mobile ── */
+@media (max-width: 600px) {
+  .cookie-banner {
+    left: 12px !important;
+    right: 12px !important;
+    bottom: 12px !important;
+    max-width: calc(100vw - 24px) !important;
+    width: auto !important;
+    padding: 16px 18px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    transform: none !important;
+  }
+  .cookie-banner p { flex: none; font-size: 0.8rem; min-width: unset; }
+  .cookie-banner .actions { width: 100%; justify-content: flex-end; }
+}
+
+/* ── Donate strip ── */
+@media (max-width: 480px) {
+  .donate-strip { font-size: 0.78rem; padding: 10px 16px; }
+}
+
+/* ═══════════════════════════════════════════════════════
+   RESPONSIVE GRID HELPERS
+   Used by home-v2.jsx via data attributes
+   ═══════════════════════════════════════════════════════ */
+
+/* Three-column feature grid → single column */
+@media (max-width: 900px) {
+  [data-three-col] {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+@media (max-width: 580px) {
+  [data-three-col] {
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+}
+
+/* Two-column section grids → single column */
+@media (max-width: 768px) {
+  [data-two-col] {
+    grid-template-columns: 1fr !important;
+    gap: 48px !important;
+  }
+}
+
+/* Four stat cards — 2×2 on mobile, already 1fr 1fr */
+@media (max-width: 480px) {
+  [data-stat-grid] {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 12px !important;
+  }
+}
+
+/* Testimonial three-col → 1 col */
+@media (max-width: 900px) {
+  [data-testimonial-grid] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+
+/* ═══════════════════════════════════════════════════════
+   FROSTED GLASS — Extended element overrides
+   ═══════════════════════════════════════════════════════ */
+
+/* Legacy .card → frosted */
+.card {
+  background: var(--glass-bg) !important;
+  backdrop-filter: var(--glass-blur) !important;
+  -webkit-backdrop-filter: var(--glass-blur) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--radius);
+  padding: 32px;
+  box-shadow: var(--glass-shadow) !important;
+  transition: all .3s ease;
+  position: relative;
+  overflow: hidden;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass-shine);
+  pointer-events: none;
+  border-radius: inherit;
+}
+.card-hover:hover {
+  box-shadow: var(--glass-shadow-lg) !important;
+  transform: translateY(-4px);
+  background: var(--glass-bg-heavy) !important;
+}
+
+/* Frosted pill badge */
+.neu-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  box-shadow: var(--glass-shadow);
+  color: var(--primary);
+  border: 1px solid var(--glass-border);
+}
+
+/* Frosted cookie banner */
+.cookie-banner {
+  background: var(--glass-bg-heavy) !important;
+  backdrop-filter: var(--glass-blur-lg) !important;
+  -webkit-backdrop-filter: var(--glass-blur-lg) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--glass-shadow-lg) !important;
+}
+
+/* Frosted mobile nav */
+.mobile-nav {
+  background: rgba(var(--bg-rgb, 238,240,244), 0.82) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+}
+
+/* Glass shimmer keyframe animation */
+@keyframes glass-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* Animated shimmer on hover for key glass surfaces */
+.neu-card:hover::before,
+.neu-stat:hover::before,
+.card:hover::before {
+  background: linear-gradient(
+    115deg,
+    transparent 25%,
+    rgba(255,255,255,0.18) 50%,
+    transparent 75%
+  );
+  background-size: 200% 100%;
+  animation: glass-shimmer 0.9s ease-in-out;
+}
+
+/* Icon boxes — glass override removed, canonical depth-sphere used instead */
+
+/* ═══════════════════════════════════════════════════════
+   MOBILE POLISH — Katie Trust v3 Final Pass
+   Covers: hero CTAs, process stepper, team grid,
+           donate rows, inner page grids, type scale
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Hero CTA buttons — stack on small phones ── */
+@media (max-width: 480px) {
+  #hero-section .kt-hero-cta-row {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+  #hero-section .kt-hero-cta-row a,
+  #hero-section .kt-hero-cta-row button {
+    width: 100%;
+    max-width: 320px;
+    justify-content: center;
+  }
+}
+
+/* ── Process stepper — vertical on mobile ── */
+@media (max-width: 680px) {
+  [data-stepper] {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+  [data-stepper-connector] { display: none !important; }
+}
+
+/* ── Team / people grid — 2 col on tablet, 1 col on phone ── */
+@media (max-width: 900px) {
+  [data-team-grid] { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 580px) {
+  [data-team-grid] { grid-template-columns: 1fr !important; gap: 20px !important; }
+}
+
+/* ── Donate CTA link rows ── */
+@media (max-width: 600px) {
+  .donate-link-row {
+    padding: 14px 16px !important;
+    gap: 12px !important;
+  }
+  .donate-link-row span { font-size: 0.95rem !important; }
+}
+
+/* ── Mission / quote card ── */
+@media (max-width: 580px) {
+  .tilt-card { touch-action: none; } /* disable tilt on touch devices */
+}
+
+/* ── Neu-stat grid — always 2 col on phone ── */
+@media (max-width: 480px) {
+  [data-stat-grid] {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 10px !important;
+  }
+  .neu-stat .stat-val { font-size: clamp(1.8rem, 7vw, 2.4rem) !important; }
+}
+
+/* ── About / two-col inner grids on inner pages ── */
+@media (max-width: 768px) {
+  [data-about-grid],
+  [data-values-grid] {
+    grid-template-columns: 1fr !important;
+    gap: 32px !important;
+  }
+}
+
+/* ── Resources / news card grids ── */
+@media (max-width: 768px) {
+  [data-resource-grid],
+  [data-news-grid] {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+}
+
+/* ── Contact form ── */
+@media (max-width: 640px) {
+  [data-contact-grid] {
+    grid-template-columns: 1fr !important;
+    gap: 40px !important;
+  }
+}
+
+/* ── Eyebrow / overline text ── */
+@media (max-width: 480px) {
+  .eyebrow { font-size: 0.68rem; letter-spacing: 0.08em; }
+}
+
+/* ── Scroll indicator — hide on very short screens ── */
+@media (max-height: 640px) {
+  #hero-scroll-indicator { display: none !important; }
+}
+
+/* ── Prevent horizontal overflow globally ── */
+body { overflow-x: hidden; }
+img, video, canvas, iframe { max-width: 100%; }

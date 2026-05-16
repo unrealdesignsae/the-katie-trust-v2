@@ -1,8 +1,8 @@
 // App v2 — uses v2 layout + HomePageV2, falls back to v1 pages for all other routes
 
 const TWEAK_DEFAULTS = {
-  "primaryColor": "#006090",
-  "accentColor": "#b88a3e",
+  "primaryColor": "#0099cc",
+  "accentColor": "#1a9fd4",
   "headingFont": "Cormorant Garamond",
   "bodyFont": "Manrope",
   "donateProminence": "moderate",
@@ -13,10 +13,17 @@ const TWEAK_DEFAULTS = {
 };
 
 function useTweaks(defaults) {
+  const GOLD_VALUES = ['#b88a3e', '#c89a4e', '#a07530', '#d4a85a', '#b08040'];
   const [tweaks, setTweaks] = React.useState(() => {
     try {
       const saved = localStorage.getItem('kt-tweaks-v2');
-      return saved ? { ...defaults, ...JSON.parse(saved) } : defaults;
+      if (!saved) return defaults;
+      const parsed = JSON.parse(saved);
+      // Purge stale gold accent values so they can't override CSS
+      if (GOLD_VALUES.includes(parsed.accentColor)) {
+        parsed.accentColor = defaults.accentColor;
+      }
+      return { ...defaults, ...parsed };
     } catch { return defaults; }
   });
   const setTweak = (key, val) => {

@@ -14,7 +14,7 @@ function NewsPage() {
 
   const catColors = {
     Policy: 'var(--primary)',
-    Casework: 'var(--accent)',
+    Casework: 'var(--primary)',
     News: '#5a7a9a',
     Reflection: '#7a6090',
   };
@@ -244,14 +244,14 @@ function ContactPage() {
               </div>
 
               {/* Crisis notice */}
-              <div className="neu-card" style={{ background: 'linear-gradient(135deg, #fff8ee, #fef3e2)', border: '1px solid rgba(184,138,62,0.2)' }}>
+              <div className="neu-card" style={{ background: 'linear-gradient(135deg, var(--primary-soft), var(--bg))', border: '1px solid rgba(56,182,232,0.15)' }}>
                 <div style={{
                   width: 40, height: 40, borderRadius: 10,
-                  background: 'rgba(184,138,62,0.12)', boxShadow: 'var(--neu-shadow-sm)',
+                  background: 'var(--primary-soft)', boxShadow: 'var(--neu-shadow-sm)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   marginBottom: 14,
                 }}>
-                  <span className="iconify" data-icon="mdi:alert-circle-outline" style={{ fontSize: 20, color: 'var(--accent)' }} />
+                  <span className="iconify" data-icon="mdi:alert-circle-outline" style={{ fontSize: 20, color: 'var(--primary)' }} />
                 </div>
                 <h4 style={{ marginBottom: 8, color: 'var(--ink)' }}>If you are in immediate distress</h4>
                 <p style={{ fontSize: '0.9rem', color: 'var(--ink-soft)', lineHeight: 1.65 }}>
@@ -314,10 +314,10 @@ function SubmissionsPage() {
                     <span style={{
                       display: 'inline-block', padding: '5px 14px', borderRadius: 100, fontSize: '0.75rem', fontWeight: 600,
                       background: s.tag === 'Active'
-                        ? 'linear-gradient(135deg, rgba(184,138,62,0.15), rgba(184,138,62,0.08))'
+                        ? 'linear-gradient(135deg, rgba(56,182,232,0.15), rgba(56,182,232,0.08))'
                         : 'var(--primary-soft)',
-                      color: s.tag === 'Active' ? 'var(--accent)' : 'var(--primary)',
-                      border: `1px solid ${s.tag === 'Active' ? 'rgba(184,138,62,0.25)' : 'rgba(0,96,144,0.15)'}`,
+                      color: s.tag === 'Active' ? 'var(--primary)' : 'var(--primary)',
+                      border: `1px solid ${s.tag === 'Active' ? 'rgba(56,182,232,0.25)' : 'rgba(0,96,144,0.15)'}`,
                     }}>{s.tag}</span>
                   </div>
                   <div>
@@ -360,7 +360,7 @@ function SubmissionsPage() {
                 <div style={{
                   position: 'absolute', top: -60, right: -60,
                   width: 220, height: 220, borderRadius: '50%',
-                  background: 'radial-gradient(circle, rgba(184,138,62,0.12) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle, rgba(56,182,232,0.10) 0%, transparent 70%)',
                   pointerEvents: 'none',
                 }} />
                 <div style={{

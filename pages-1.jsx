@@ -27,7 +27,11 @@ function AboutPage() {
             </p>
           </div>
 
-          <ImagePh label="Photograph — Katie's place" height={420} style={{ margin: '0 0 64px', borderRadius: 16 }} />
+          <img
+            src="https://images.unsplash.com/photo-1589994965851-a8f479c573a9?w=1400&q=85&auto=format&fit=crop"
+            alt="Lady Justice statue — scales and sword against a clear blue sky"
+            style={{ width: '100%', height: 420, objectFit: 'cover', objectPosition: 'center top', borderRadius: 16, margin: '0 0 64px', display: 'block' }}
+          />
 
           {/* Values */}
           <div className="eyebrow" style={{ marginBottom: 24 }}>Our values</div>
@@ -35,7 +39,7 @@ function AboutPage() {
           <div style={{ display: 'grid', gap: 20 }}>
             {values.map(([h, b], i) => (
               <div key={i} className="neu-card anim-fade-up" style={{ animationDelay: `${i * 0.1}s`, display: 'grid', gridTemplateColumns: '4px 1fr', gap: 28, alignItems: 'start', padding: 32 }}>
-                <div style={{ background: 'linear-gradient(to bottom, var(--accent), var(--primary))', borderRadius: 4, height: '100%', minHeight: 60 }} />
+                <div style={{ background: 'var(--primary)', borderRadius: 4, height: '100%', minHeight: 60, opacity: 0.7 }} />
                 <div>
                   <h3 style={{ marginBottom: 8, color: 'var(--ink)', fontSize: '1.15rem' }}>{h}</h3>
                   <p style={{ color: 'var(--ink-soft)', lineHeight: 1.7 }}>{b}</p>
@@ -61,6 +65,90 @@ function AboutPage() {
   );
 }
 
+/* ── Process Accordion ── */
+function ProcessAccordion({ steps }) {
+  const [openId, setOpenId] = React.useState('01');
+
+  return (
+    <div style={{ width: '100%', maxWidth: 900, margin: '0 auto 0' }}>
+      <style>{`
+        .proc-item { border-top: 1px solid var(--line); }
+        .proc-item:last-child { border-bottom: 1px solid var(--line); }
+
+        .proc-trigger {
+          width: 100%; text-align: left; background: none; border: none;
+          cursor: pointer; padding: 0 0 0 24px;
+          display: flex; align-items: flex-start; gap: 20px;
+          transition: color 0.25s;
+        }
+        @media (min-width: 768px) { .proc-trigger { padding-left: 56px; } }
+
+        .proc-trigger[data-open="false"] { color: var(--ink); opacity: 0.22; }
+        .proc-trigger[data-open="false"]:hover { opacity: 0.45; }
+        .proc-trigger[data-open="true"]  { color: var(--primary); opacity: 1; }
+
+        .proc-num {
+          font-size: 0.72rem; font-family: var(--sans); font-weight: 600;
+          letter-spacing: 0.05em; color: var(--ink-muted);
+          margin-top: 28px; flex-shrink: 0; min-width: 24px;
+          transition: color 0.25s;
+        }
+        .proc-trigger[data-open="true"] .proc-num { color: var(--primary); }
+
+        .proc-title {
+          font-family: var(--serif);
+          font-size: clamp(1.9rem, 4vw, 3.2rem);
+          font-weight: 400;
+          text-transform: uppercase;
+          letter-spacing: 0.025em;
+          line-height: 1.08;
+          margin: 18px 0;
+          transition: color 0.25s;
+        }
+
+        .proc-body-wrap {
+          overflow: hidden;
+          transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1),
+                      opacity 0.35s ease;
+        }
+        .proc-body-wrap[data-open="false"] { max-height: 0; opacity: 0; }
+        .proc-body-wrap[data-open="true"]  { max-height: 300px; opacity: 1; }
+
+        .proc-body {
+          padding: 0 24px 28px 44px;
+          font-family: var(--sans);
+          font-size: 1rem;
+          line-height: 1.75;
+          color: var(--ink-soft);
+          max-width: 680px;
+        }
+        @media (min-width: 768px) { .proc-body { padding-left: 80px; } }
+      `}</style>
+
+      {steps.map((s) => {
+        const isOpen = openId === s.n;
+        return (
+          <div key={s.n} className="proc-item">
+            <button
+              className="proc-trigger"
+              data-open={isOpen ? 'true' : 'false'}
+              onClick={() => setOpenId(isOpen ? null : s.n)}
+              aria-expanded={isOpen}
+            >
+              <span className="proc-num">{s.n}</span>
+              <span className="proc-title">{s.t}</span>
+            </button>
+
+            <div className="proc-body-wrap" data-open={isOpen ? 'true' : 'false'}>
+              <p className="proc-body">{s.b}</p>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
 function HowWeWorkPage() {
   const steps = [
     { n: '01', t: 'You reach out', b: 'A family member, a friend, or a professional makes contact through our referral form, by phone, or by post. There is no formal threshold to begin a conversation.' },
@@ -80,40 +168,10 @@ function HowWeWorkPage() {
 
       <section className="section">
         <div className="container">
-          {/* Steps */}
-          <div style={{ display: 'grid', gap: 20, marginBottom: 64 }}>
-            {steps.map((s, i) => (
-              <div key={i} className="neu-card anim-fade-up" style={{ animationDelay: `${i * 0.08}s`, display: 'flex', gap: 28, alignItems: 'flex-start' }}>
-                {/* Number badge */}
-                <div style={{
-                  flexShrink: 0,
-                  width: 64, height: 64, borderRadius: '50%',
-                  background: 'var(--bg)',
-                  boxShadow: 'var(--neu-shadow)',
-                  border: '1px solid rgba(255,255,255,0.7)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontFamily: 'var(--serif)', fontSize: '1.3rem', color: 'var(--primary)',
-                }}>
-                  {s.n}
-                </div>
-                {/* Content */}
-                <div style={{ paddingTop: 10 }}>
-                  <h3 style={{ marginBottom: 8, fontSize: '1.1rem' }}>{s.t}</h3>
-                  <p style={{ color: 'var(--ink-soft)', maxWidth: 680, lineHeight: 1.7 }}>{s.b}</p>
-                </div>
-                {/* Connector line (all but last) */}
-                {i < steps.length - 1 && (
-                  <div style={{
-                    position: 'absolute',
-                    display: 'none', // handled via gap
-                  }} />
-                )}
-              </div>
-            ))}
-          </div>
+          <ProcessAccordion steps={steps} />
 
           {/* CTA */}
-          <div className="neu-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, flexWrap: 'wrap' }}>
+          <div className="neu-card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, flexWrap: 'wrap', marginTop: 80 }}>
             <div>
               <h3 style={{ marginBottom: 6 }}>If you are unsure, please write anyway.</h3>
               <p style={{ color: 'var(--ink-soft)' }}>There is no wrong way to begin. We respond to every enquiry within 48 hours (excluding weekends and public holidays).</p>
@@ -152,14 +210,8 @@ function ImpactPage() {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 20, marginBottom: 80 }} data-four-col>
             {stats.map((s, i) => (
               <div key={i} className="neu-stat anim-fade-up" style={{ animationDelay: `${i * 0.08}s` }}>
-                <div style={{
-                  width: 44, height: 44, borderRadius: 12,
-                  background: 'linear-gradient(135deg, var(--primary-soft), #d0e4f0)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  margin: '0 auto 16px',
-                  boxShadow: 'var(--neu-shadow-sm)',
-                }}>
-                  <span className="iconify" data-icon={s.icon} style={{ fontSize: 20, color: 'var(--primary)' }} />
+                <div className="icon-box" style={{ margin: '0 auto 16px' }}>
+                  <span className="iconify" data-icon={s.icon} />
                 </div>
                 <div className="neu-stat-num">{s.n}</div>
                 <div className="neu-stat-label">{s.l}</div>
