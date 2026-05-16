@@ -82,8 +82,8 @@
 }
 
 /* Dark mobile nav */
-[data-theme="dark"] .mobile-nav { background: var(--bg); }
-[data-theme="dark"] .mobile-nav a { color: var(--ink); border-color: var(--line); }
+[data-theme="dark"] .mobile-nav { background: rgba(10,14,24,0.97) !important; backdrop-filter: blur(24px) saturate(180%) !important; -webkit-backdrop-filter: blur(24px) saturate(180%) !important; }
+[data-theme="dark"] .mobile-nav a { color: var(--ink) !important; border-color: var(--line) !important; }
 
 /* Dark ghost button */
 [data-theme="dark"] .btn-ghost {
@@ -1329,9 +1329,10 @@ button.neu-toggle-track {
   box-shadow: var(--glass-shadow-lg) !important;
 }
 
-/* Frosted mobile nav */
-.mobile-nav {
-  background: rgba(var(--bg-rgb, 238,240,244), 0.82) !important;
+/* Frosted mobile nav — light mode only */
+[data-theme="light"] .mobile-nav,
+:root:not([data-theme="dark"]) .mobile-nav {
+  background: rgba(238, 240, 244, 0.96) !important;
   backdrop-filter: blur(24px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
 }
